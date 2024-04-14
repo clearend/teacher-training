@@ -8,43 +8,43 @@
                 <el-table-column type="expand">
                   <template slot-scope="props">
                     <el-form label-position="left" inline class="demo-table-expand">
-                      <el-form-item label="店铺名称">
+                      <el-form-item label="培训标题">
                         <span>{{ props.row.name }}</span>
                       </el-form-item>
-                      <el-form-item label="店铺地址">
+                      <el-form-item label="培训地点">
                         <span>{{ props.row.address }}</span>
                       </el-form-item>
-                      <el-form-item label="店铺介绍">
+                      <el-form-item label="培训描述">
                         <span>{{ props.row.description }}</span>
                       </el-form-item>
-                      <el-form-item label="店铺 ID">
+                      <el-form-item label="培训容量">
                         <span>{{ props.row.id }}</span>
                       </el-form-item>
-                      <el-form-item label="联系电话">
+                      <el-form-item label="培训容量">
                         <span>{{ props.row.phone }}</span>
                       </el-form-item>
-                      <el-form-item label="评分">
+                      <el-form-item label="培训开始日期">
                         <span>{{ props.row.rating }}</span>
                       </el-form-item>
-                      <el-form-item label="销售量">
+                      <el-form-item label="培训结束日期">
                         <span>{{ props.row.recent_order_num }}</span>
                       </el-form-item>
-                      <el-form-item label="分类">
+                      <el-form-item label="培训类别">
                         <span>{{ props.row.category }}</span>
                       </el-form-item>
                     </el-form>
                   </template>
                 </el-table-column>
                 <el-table-column
-                  label="店铺名称"
+                  label="培训标题"
                   prop="name">
                 </el-table-column>
                 <el-table-column
-                  label="店铺地址"
+                  label="培训地点"
                   prop="address">
                 </el-table-column>
                 <el-table-column
-                  label="店铺介绍"
+                  label="培训描述"
                   prop="description">
                 </el-table-column>
                 <el-table-column label="操作" width="200">
@@ -55,7 +55,7 @@
                     <el-button
                       size="mini"
                       type="Success"
-                      @click="addFood(scope.$index, scope.row)">添加食品</el-button>
+                      @click="addFood(scope.$index, scope.row)">添加培训</el-button>
                     <el-button
                       size="mini"
                       type="danger"
