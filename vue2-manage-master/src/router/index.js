@@ -5,19 +5,24 @@ Vue.use(Router)
 
 const login = r => require.ensure([], () => r(require('@/page/login')), 'login');
 const manage = r => require.ensure([], () => r(require('@/page/manage')), 'manage');
+const manageUser = r => require.ensure([], () => r(require('@/page/manageUser')), 'manage');
 const home = r => require.ensure([], () => r(require('@/page/home')), 'home');
 const addShop = r => require.ensure([], () => r(require('@/page/addShop')), 'addShop');
 const addGoods = r => require.ensure([], () => r(require('@/page/addGoods')), 'addGoods');
 const userList = r => require.ensure([], () => r(require('@/page/userList')), 'userList');
 const shopList = r => require.ensure([], () => r(require('@/page/shopList')), 'shopList');
+const shopListUser = r => require.ensure([], () => r(require('@/page/shopListUser')), 'shopListUser');
 const foodList = r => require.ensure([], () => r(require('@/page/foodList')), 'foodList');
+const foodListUser = r => require.ensure([], () => r(require('@/page/foodListUser')), 'foodListUser');
 const orderList = r => require.ensure([], () => r(require('@/page/orderList')), 'orderList');
+const orderListUser = r => require.ensure([], () => r(require('@/page/orderListUser')), 'orderListUser');
 const adminList = r => require.ensure([], () => r(require('@/page/adminList')), 'adminList');
 const visitor = r => require.ensure([], () => r(require('@/page/visitor')), 'visitor');
 const newMember = r => require.ensure([], () => r(require('@/page/newMember')), 'newMember');
 const uploadImg = r => require.ensure([], () => r(require('@/page/uploadImg')), 'uploadImg');
 const vueEdit = r => require.ensure([], () => r(require('@/page/vueEdit')), 'vueEdit');
 const adminSet = r => require.ensure([], () => r(require('@/page/adminSet')), 'adminSet');
+const adminSetUser = r => require.ensure([], () => r(require('@/page/adminSetUser')), 'adminSetUser');
 const sendMessage = r => require.ensure([], () => r(require('@/page/sendMessage')), 'sendMessage');
 const explain = r => require.ensure([], () => r(require('@/page/explain')), 'explain');
 
@@ -90,6 +95,32 @@ const routes = [
             path: '/explain',
             component: explain,
             meta: ['说明', '说明'],
+        }]
+    },
+    {
+        path: '/manageUser',
+        component: manageUser,
+        name: '',
+        children: [{
+            path: '',
+            component: home,
+            meta: [],
+        },{
+            path: '/shopListUser',
+            component: shopListUser,
+            meta: ['数据管理', '培训内容列表'],
+        },{
+            path: '/foodListUser',
+            component: foodListUser,
+            meta: ['数据管理', '素材列表'],
+        },{
+            path: '/orderListUser',
+            component: orderListUser,
+            meta: ['数据管理', '提醒列表'],
+        },{
+            path: '/adminSetUser',
+            component: adminSetUser,
+            meta: ['设置', '管理员设置'],
         }]
     }
 ]

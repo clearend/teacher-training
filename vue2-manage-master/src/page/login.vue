@@ -66,6 +66,10 @@ export default {
                             type: 'success',
                             message: '登录成功'
                         });
+                        if (this.loginForm.username === 'user') {
+                            this.$router.push('manageUser')
+                            return;
+                        }
                         this.$router.push('manage')
                     }else{
                         this.$message({

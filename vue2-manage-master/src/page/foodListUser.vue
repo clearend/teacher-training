@@ -404,14 +404,14 @@
                 }
 
                 this.addDialogFormVisible = false;
-                demoFileData.splice(0, 0, this.newTable);
-                this.count = demoFileData.length;
-                this.currentPage = 1;
-                this.tableData = demoFileData.slice(0, this.limit);
+                // demoFileData.splice(0, 0, this.newTable);
+                // this.count = demoFileData.length;
+                // this.currentPage = 1;
+                // this.tableData = demoFileData.slice(0, this.limit);
 
                 this.$message({
                     type: 'success',
-                    message: '添加成功'
+                    message: '添加成功，等待管理员审核'
                 });
             },
             handleServiceAvatarScucess(res, file) {

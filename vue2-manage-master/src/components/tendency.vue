@@ -33,7 +33,7 @@
                         trigger: 'axis'
                     },
                     legend: {
-                        data:['新注册用户', '新增订单', '新增管理员']
+                        data:['新注册用户', '新增素材', '新增培训记录']
                     },
                     toolbox: {
                         show: true,
@@ -97,7 +97,7 @@
                             },
                         },
                         {
-                            name:'新增订单',
+                            name:'新增素材',
                             type:'line',
                             data:this.sevenDate[1],
                             yAxisIndex: 1,
@@ -109,7 +109,7 @@
                             },
                         },
                         {
-                            name:'新增管理员',
+                            name:'新增培训记录',
                             type:'line',
                             data:this.sevenDate[2],
                             yAxisIndex: 1,
