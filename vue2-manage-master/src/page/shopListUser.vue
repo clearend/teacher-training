@@ -15,39 +15,64 @@
                 <el-table-column label="操作" width="300">
                     <template slot-scope="scope">
                         <el-button v-if="scope.row.status === '待报名'" size="small" type="success" @click="handleJoin(scope.row)">报名</el-button>
-                        <el-button v-if="scope.row.status !== '待报名'" size="small" type="success" @click="handleJoin(scope.row)" disabled>报名</el-button>
-                        <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
-                        <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                        
+                        <el-button v-if="scope.row.status === '待完成'" size="small" type="warning" @click="handleReport(scope.row)">学习上报</el-button>
+                        <el-button v-if="scope.row.status === '待完成'" size="small" type="danger" @click="handleCancleJoin(scope.row)">取消报名</el-button>
+
+                        <el-button v-if="scope.row.status === '已完成'" size="small" type="primary" @click="finishFormVisible = true">查看详情</el-button>
+
+                        <!-- <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button> -->
+                        <!-- <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button> -->
                     </template>
                 </el-table-column>
             </el-table>
             <div class="Pagination">
                 <el-pagination
-                  @size-change="handleSizeChange"
-                  @current-change="handleCurrentChange"
-                  :current-page="currentPage"
-                  :page-size="limit"
-                  layout="total, prev, pager, next"
-                  :total="count">
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="currentPage"
+                    :page-size="limit"
+                    layout="total, prev, pager, next"
+                    :total="count">
                 </el-pagination>
             </div>
 
-            <el-dialog title="修改培训信息" v-model="dialogFormVisible">
+            <el-dialog title="培训完成上报" v-model="dialogFormVisible">
                 <el-form :model="selectTable">
                     <el-form-item label="培训主题" label-width="100px">
-                        <el-input v-model="selectTable.name" auto-complete="off"></el-input>
+                        <el-input v-model="selectTable.name" auto-complete="off" :disabled="true"></el-input>
                     </el-form-item>
                     <el-form-item label="培训地点" label-width="100px">
-                        <el-input v-model="selectTable.location"></el-input>
+                        <el-input v-model="selectTable.location" :disabled="true"></el-input>
                     </el-form-item>
                     <el-form-item label="培训描述" label-width="100px">
-                        <el-input v-model="selectTable.description"></el-input>
+                        <el-input v-model="selectTable.description" :disabled="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="培训心得" label-width="100px">
+                        <el-input v-model="selectTable.finishTalk" type="textarea"></el-input>
                     </el-form-item>
                 </el-form>
-              <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="updateLearn">确 定</el-button>
-              </div>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="dialogFormVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="report">确 定</el-button>
+                </div>
+            </el-dialog>
+
+            <el-dialog title="培训完成详情" v-model="finishFormVisible">
+                <el-form :model="selectTable">
+                    <el-form-item label="培训主题" label-width="100px">
+                        <el-input v-model="selectTable.name" auto-complete="off" :disabled="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="培训地点" label-width="100px">
+                        <el-input v-model="selectTable.location" :disabled="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="培训描述" label-width="100px">
+                        <el-input v-model="selectTable.description" :disabled="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="培训心得" label-width="100px">
+                        <el-input v-model="selectTable.finishTalk" type="textarea" :disabled="true"></el-input>
+                    </el-form-item>
+                </el-form>
             </el-dialog>
         </div>
     </div>
@@ -65,7 +90,7 @@
             "name": "企业发展战略规划研讨会",
             "location": "清华大学经管楼B-101室",
             "description": "研究企业发展的战略性规划方法",
-            "status": "已报名",
+            "status": "已完成",
         },
         {
             "name": "科技创新前沿论坛",
@@ -83,19 +108,19 @@
             "name": "法律法规解读研讨会",
             "location": "复旦大学法学院会议室",
             "description": "深入解析最新颁布的法律法规",
-            "status": "已报名",
+            "status": "已完成",
         },
         {
             "name": "医学科研技术交流会",
             "location": "北京协和医学院报告厅",
             "description": "分享医学科研技术的最新进展",
-            "status": "待报名",
+            "status": "待完成",
         },
         {
             "name": "互联网创业成功经验分享会",
             "location": "清华大学五道口金融学院会议室",
             "description": "交流互联网创业的成功经验与教训",
-            "status": "已报名",
+            "status": "已完成",
         },
         {
             "name": "环境保护与可持续发展论坛",
@@ -107,13 +132,13 @@
             "name": "人工智能应用前景研讨会",
             "location": "哈尔滨工业大学信息楼A-101室",
             "description": "探讨人工智能在各领域的应用前景",
-            "status": "已报名",
+            "status": "已完成",
         },
         {
             "name": "文学艺术创作技巧分享会",
             "location": "中央美术学院艺术创作中心",
             "description": "分享文学艺术创作的技巧与心得",
-            "status": "待报名",
+            "status": "待完成",
         },
         {
             "name": "金融投资新思路讲座",
@@ -131,7 +156,7 @@
             "name": "教育技术应用研讨会",
             "location": "南京师范大学教育技术学院会议室",
             "description": "分享教育技术在课堂中的应用实践",
-            "status": "已报名",
+            "status": "已完成",
         },
         {
             "name": "人文社科研究成果汇报会",
@@ -155,19 +180,19 @@
             "name": "心理健康与情绪管理讲座",
             "location": "南京师范大学心理学院报告厅",
             "description": "传授心理健康与情绪管理的技巧",
-            "status": "待报名",
+            "status": "待完成",
         },
         {
             "name": "环境保护技术应用研讨会",
             "location": "北京大学环境科学与工程学院会议室",
             "description": "探讨环境保护技术的应用与创新",
-            "status": "已报名",
+            "status": "已完成",
         },
         {
             "name": "智能制造技术发展趋势研讨会",
             "location": "清华大学智能制造研究中心报告厅",
             "description": "探讨智能制造技术的发展趋势与前景",
-            "status": "待报名",
+            "status": "待完成",
         },
         {
             "name": "文化艺术创意产业论坛",
@@ -179,12 +204,12 @@
             "name": "金融科技创新发展讲座",
             "location": "南京大学金融学院报告厅",
             "description": "解析金融科技在金融行业中的应用与发展",
-            "status": "待报名",
+            "status": "待完成",
         },
     ]
 
 
-            import headTop from '../components/headTop'
+    import headTop from '../components/headTop'
     import {baseUrl, baseImgPath} from '@/config/env'
     import {cityGuess, getResturants, getResturantsCount, foodCategory, updateResturant, searchplace, deleteResturant} from '@/api/getData'
     export default {
@@ -205,14 +230,15 @@
                 address: {},
                 addDialogFormVisible: false,
                 newTable: {},
+                finishFormVisible: false,
             }
         },
         created(){
             this.initData();
         },
-    	components: {
-    		headTop,
-    	},
+        components: {
+            headTop,
+        },
         methods: {
             initData(){
                 this.getLearns();
@@ -235,10 +261,36 @@
                 this.dialogFormVisible = true;
             },
             handleJoin(row) {
-                row.status = "已报名";
+                row.status = "待完成";
                 this.$message({
                     type: 'success',
                     message: '报名成功，请记得按时参与'
+                });
+            },
+            handleCancleJoin(row) {
+                row.status = "待报名";
+                this.$message({
+                    type: 'success',
+                    message: '取消报名成功'
+                });
+            },
+            handleReport(row) {
+                this.selectTable = row;
+                this.dialogFormVisible = true;
+            },
+            report() {
+                this.dialogFormVisible = false;
+                if (this.selectTable.finishTalk === "") {
+                    this.$message({
+                        type: 'error',
+                        message: '请填写学习心得'
+                    });
+                    return;
+                }
+                this.selectTable.status = "已完成";
+                this.$message({
+                    type: 'success',
+                    message: '上报成功'
                 });
             },
             handleDelete(index, row) {

@@ -46,12 +46,12 @@
             </el-table>
             <div class="Pagination">
                 <el-pagination
-                  @size-change="handleSizeChange"
-                  @current-change="handleCurrentChange"
-                  :current-page="currentPage"
-                  :page-size="limit"
-                  layout="total, prev, pager, next"
-                  :total="count">
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="currentPage"
+                    :page-size="limit"
+                    layout="total, prev, pager, next"
+                    :total="count">
                 </el-pagination>
             </div>
 
@@ -67,11 +67,65 @@
                         <el-input v-model="selectTable.description"></el-input>
                     </el-form-item>
                 </el-form>
-              <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="updateLearn">确 定</el-button>
-              </div>
+
+                <h3 style="margin-bottom: 10px;">培训教师列表</h3>
+                <el-row style="overflow: auto; text-align: left;">
+
+                    <el-table
+                        :data="selectTable.trainList"
+                        style="margin-bottom: 20px;"
+                        :row-class-name="tableRowClassName">
+                        <el-table-column prop="name" label="教师姓名"></el-table-column>
+                        <el-table-column prop="jobId" label="工号"></el-table-column>
+                        <el-table-column prop="date" label="报名日期"></el-table-column>
+                        <el-table-column label="操作" >
+                        <template slot-scope="scope">
+                            <el-button size="small" type="danger" @click="deleteItem(scope.$index)">删除</el-button>
+                        </template>
+                        </el-table-column>
+					</el-table>
+
+                    <div style="text-align: center;">
+                        <el-button type="primary" @click="addItemForm()" style="margin-bottom: 10px;">添加教师</el-button>
+                    </div>
+				</el-row>
+
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="dialogFormVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="updateLearn">确 定</el-button>
+                </div>
             </el-dialog>
+
+            <el-dialog title="添加教师" v-model="specsFormVisible">
+                <!-- <el-form :model="addItemList"> -->
+
+                    <el-select v-model="selectedTeachers" multiple placeholder="请选择">
+                        <el-option
+                            v-for="item in teacherList"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+
+                    <!-- <el-form-item label="规格" label-width="100px" prop="specs">
+                        <el-input v-model="addItemList.specs" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="包装费" label-width="100px">
+						<el-input-number v-model="addItemList.packing_fee" :min="0" :max="100"></el-input-number>
+					</el-form-item>
+					<el-form-item label="价格" label-width="100px">
+						<el-input-number v-model="addItemList.price" :min="0" :max="10000"></el-input-number>
+					</el-form-item> -->
+                <!-- </el-form> -->
+
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="specsFormVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="addItem">确 定</el-button>
+                </div>
+
+			</el-dialog>
+
         </div>
     </div>
 </template>
@@ -184,9 +238,52 @@
             "description": "解析金融科技在金融行业中的应用与发展"
         },
     ]
+    const demoTrainList = [
+        {
+            name: "张三",
+            jobId: "2019001",
+            date: "2020-01-01",
+        },
+        {
+            name: "李四",
+            jobId: "2019002",
+            date: "2020-01-02",
+        },
+        {
+            name: "王五",
+            jobId: "2019003",
+            date: "2020-01-03",
+        },
+    ]
+    const demoTeacherList = [
+        {
+            name: "李占峰",
+            jobId: "2019001",
+        },
+        {
+            name: "张永年",
+            jobId: "2019002",
+        },
+        {
+            name: "崔宇",
+            jobId: "2019003",
+        },
+        {
+            name: "周志华",
+            jobId: "2019004",
+        },
+        {
+            name: "李建华",
+            jobId: "2019005",
+        },
+        {
+            name: "王小云",
+            jobId: "2019006",
+        },
+    ]
 
 
-            import headTop from '../components/headTop'
+    import headTop from '../components/headTop'
     import {baseUrl, baseImgPath} from '@/config/env'
     import {cityGuess, getResturants, getResturantsCount, foodCategory, updateResturant, searchplace, deleteResturant} from '@/api/getData'
     export default {
@@ -207,14 +304,18 @@
                 address: {},
                 addDialogFormVisible: false,
                 newTable: {},
+                specsFormVisible: false,
+                addItemList: {},
+                teacherList: [],
+                selectedTeachers: []
             }
         },
         created(){
             this.initData();
         },
-    	components: {
-    		headTop,
-    	},
+        components: {
+            headTop,
+        },
         methods: {
             initData(){
                 this.getLearns();
@@ -234,6 +335,7 @@
             handleEdit(row) {
                 // console.log(row)
                 this.selectTable = row;
+                this.selectTable.trainList = demoTrainList;
                 this.dialogFormVisible = true;
             },
             handleDelete(index, row) {
@@ -318,6 +420,59 @@
                     type: 'success',
                     message: '添加成功'
                 });
+            },
+            tableRowClassName(row, index) {
+                if (index === 1) {
+                    return 'info-row';
+                } else if (index === 3) {
+                    return 'positive-row';
+                }
+                return '';
+            },
+            deleteItem(index) {
+                this.selectTable.trainList.splice(index, 1);
+                this.$message({
+                    type: 'success',
+                    message: '删除成功'
+                });
+                // this.selectTable.trainList = demoTrainList;
+            },
+            addItem() {
+                // this.addItemList = {
+                //     "name": "",
+                //     "jobId": "",
+                //     "date": "",
+                // };
+
+                let now = new Date();
+                this.selectedTeachers.forEach(element => {
+                    let newTeacher = demoTeacherList[element];
+                    this.selectTable.trainList.push({
+                        name: newTeacher.name,
+                        jobId: newTeacher.jobId,
+                        date: now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate(),
+                    });
+                });
+
+                // this.selectTable.trainList.push(this.addItemList);
+                this.specsFormVisible = false;
+                this.$message({
+                    type: 'success',
+                    message: '添加成功'
+                });
+            },
+            addItemForm() {
+                this.teacherList = [];
+                this.selectedTeachers = [];
+                demoTeacherList.forEach((element, index) => {
+                    this.teacherList.push({
+                        key: element.jobId,
+                        value: index,
+                        label: element.name + element.jobId,
+                    })
+                });
+                // console.log(this.teacherList);
+                this.specsFormVisible = true;
             }
         },
     }
