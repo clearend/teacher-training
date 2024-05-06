@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: server
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://114.116.252.42:3306/teacher_training?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 3ADFKdPY@8G!cs@D
+
+server:
+  port: 8901
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.example.training.core.controller
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: is_del
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
