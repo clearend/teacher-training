@@ -1,5 +1,7 @@
 package com.example.training.core.entity.vo;
 
+import com.example.training.core.entity.enums.GenderEnum;
+import com.example.training.core.entity.enums.RoleEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -12,8 +14,11 @@ public class LoginVO {
     @Schema(description = "工号")
     private String jobId;
 
+    @Schema(description = "角色")
+    private RoleEnum role;
+
     @Schema(description = "性别")
-    private Integer gender;
+    private GenderEnum gender;
 
     @Schema(description = "电子邮件")
     private String email;

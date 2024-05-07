@@ -33,4 +33,6 @@ mybatis-plus:
       logic-delete-field: is_del
       logic-delete-value: 1
       logic-not-delete-value: 0
+#  configuration:
+#    default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler
 

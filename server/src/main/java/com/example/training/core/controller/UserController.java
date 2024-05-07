@@ -1,6 +1,7 @@
 package com.example.training.core.controller;
 
 import com.example.training.common.ResultResponse;
+import com.example.training.common.annotations.PermissionAccess;
 import com.example.training.common.enums.StatusEnum;
 import com.example.training.core.entity.request.LoginRequest;
 import com.example.training.core.entity.vo.LoginVO;
@@ -27,6 +28,7 @@ public class UserController {
     @Resource
     private IUserService userService;
 
+    @PermissionAccess
     @PostMapping("/login")
     @Operation(summary = "用户登录")
     public ResultResponse<?> login(

@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -16,6 +18,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * @author coder
  * @since 2024-05-06
  */
+@Setter
+@Getter
 @Schema(name = "Training", description = "")
 public class Training implements Serializable {
 
@@ -52,86 +56,6 @@ public class Training implements Serializable {
 
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getTrainingId() {
-        return trainingId;
-    }
-
-    public void setTrainingId(String trainingId) {
-        this.trainingId = trainingId;
-    }
-
-    public String getTrainingName() {
-        return trainingName;
-    }
-
-    public void setTrainingName(String trainingName) {
-        this.trainingName = trainingName;
-    }
-
-    public Integer getTrainingType() {
-        return trainingType;
-    }
-
-    public void setTrainingType(Integer trainingType) {
-        this.trainingType = trainingType;
-    }
-
-    public LocalDateTime getTrainingTime() {
-        return trainingTime;
-    }
-
-    public void setTrainingTime(LocalDateTime trainingTime) {
-        this.trainingTime = trainingTime;
-    }
-
-    public String getTrainingAddress() {
-        return trainingAddress;
-    }
-
-    public void setTrainingAddress(String trainingAddress) {
-        this.trainingAddress = trainingAddress;
-    }
-
-    public String getTrainingContent() {
-        return trainingContent;
-    }
-
-    public void setTrainingContent(String trainingContent) {
-        this.trainingContent = trainingContent;
-    }
-
-    public Integer getIsDel() {
-        return isDel;
-    }
-
-    public void setIsDel(Integer isDel) {
-        this.isDel = isDel;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    public LocalDateTime getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(LocalDateTime updateTime) {
-        this.updateTime = updateTime;
-    }
 
     @Override
     public String toString() {

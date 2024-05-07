@@ -1,4 +1,4 @@
-package com.example.training.common;
+package com.example.training.common.exceptions;
 
 public class BizException extends RuntimeException {
 

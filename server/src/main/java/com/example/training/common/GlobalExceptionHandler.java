@@ -1,6 +1,8 @@
 package com.example.training.common;
 
 import com.example.training.common.enums.StatusEnum;
+import com.example.training.common.exceptions.BizException;
+import com.example.training.common.exceptions.PermissionDenyException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,11 @@ public class GlobalExceptionHandler {
         String requestURI = request.getRequestURI();
         logger.error("请求地址:{}, 发生业务异常:{}.", requestURI, e.getMessage());
         return ResultResponse.error(StatusEnum.SERVICE_ERROR, e.getMessage());
+    }
+    
+    @ExceptionHandler(PermissionDenyException.class)
+    public ResultResponse<?> handlePermissionDenyException(PermissionDenyException e, HttpServletRequest request) {
+        return ResultResponse.error(StatusEnum.FORBIDDEN);
     }
 
     /**

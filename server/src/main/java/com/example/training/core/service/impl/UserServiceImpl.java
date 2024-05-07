@@ -1,7 +1,7 @@
 package com.example.training.core.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.example.training.common.BizException;
+import com.example.training.common.exceptions.BizException;
 import com.example.training.core.entity.User;
 import com.example.training.core.entity.request.LoginRequest;
 import com.example.training.core.entity.vo.LoginVO;
@@ -31,7 +31,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public LoginVO login(LoginRequest loginRequest) {
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<User>();
-        wrapper.select(User::getUserId, User::getJobId, User::getGender, User::getEmail, User::getPhone)
+        wrapper.select(User::getUserId, User::getJobId, User::getGender, User::getEmail, User::getPhone, User::getRole)
                 .eq(User::getJobId, loginRequest.getUsername())
                 .eq(User::getPassword, loginRequest.getPassword());
         User user = userMapper.selectOne(wrapper);

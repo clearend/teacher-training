@@ -6,7 +6,11 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import com.example.training.core.entity.enums.AuditEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -16,6 +20,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * @author coder
  * @since 2024-05-06
  */
+@Setter
+@Getter
 @TableName("training_audit")
 @Schema(name = "TrainingAudit", description = "")
 public class TrainingAudit implements Serializable {
@@ -42,7 +48,7 @@ public class TrainingAudit implements Serializable {
     private String fileId;
 
     @Schema(description = "审核状态")
-    private Integer auditStatus;
+    private AuditEnum auditStatus;
 
     @Schema(description = "审核时间")
     private LocalDateTime auditTime;
@@ -59,102 +65,6 @@ public class TrainingAudit implements Serializable {
 
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getTrainingAuditId() {
-        return trainingAuditId;
-    }
-
-    public void setTrainingAuditId(String trainingAuditId) {
-        this.trainingAuditId = trainingAuditId;
-    }
-
-    public String getTrainingId() {
-        return trainingId;
-    }
-
-    public void setTrainingId(String trainingId) {
-        this.trainingId = trainingId;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getFileId() {
-        return fileId;
-    }
-
-    public void setFileId(String fileId) {
-        this.fileId = fileId;
-    }
-
-    public Integer getAuditStatus() {
-        return auditStatus;
-    }
-
-    public void setAuditStatus(Integer auditStatus) {
-        this.auditStatus = auditStatus;
-    }
-
-    public LocalDateTime getAuditTime() {
-        return auditTime;
-    }
-
-    public void setAuditTime(LocalDateTime auditTime) {
-        this.auditTime = auditTime;
-    }
-
-    public String getAuditRemark() {
-        return auditRemark;
-    }
-
-    public void setAuditRemark(String auditRemark) {
-        this.auditRemark = auditRemark;
-    }
-
-    public Integer getIsDel() {
-        return isDel;
-    }
-
-    public void setIsDel(Integer isDel) {
-        this.isDel = isDel;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    public LocalDateTime getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(LocalDateTime updateTime) {
-        this.updateTime = updateTime;
-    }
 
     @Override
     public String toString() {
