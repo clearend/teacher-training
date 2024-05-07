@@ -6,6 +6,7 @@ import com.example.training.core.entity.request.LoginRequest;
 import com.example.training.core.entity.request.UserListRequest;
 import com.example.training.core.entity.vo.LoginVO;
 import com.example.training.core.entity.vo.UserListItemVO;
+import com.example.training.core.entity.vo.UserListVO;
 
 import java.util.List;
 
@@ -21,5 +22,5 @@ public interface IUserService extends IService<User> {
 
     LoginVO login(LoginRequest loginRequest);
 
-    List<UserListItemVO> getUserList(UserListRequest userListRequest);
+    UserListVO getUserList(UserListRequest userListRequest);
 }

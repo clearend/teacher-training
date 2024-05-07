@@ -7,3 +7,14 @@ export const login = data => {
         data,
     })
 }
+
+export const getUserList = data => {
+    return serviceAxios({
+        url: '/core/user/list',
+        method: 'post',
+        header: {
+            'userId': localStorage.getItem('userId')
+        },
+        data: data,
+    })
+}

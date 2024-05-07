@@ -8,6 +8,7 @@ import com.example.training.core.entity.request.LoginRequest;
 import com.example.training.core.entity.request.UserListRequest;
 import com.example.training.core.entity.vo.LoginVO;
 import com.example.training.core.entity.vo.UserListItemVO;
+import com.example.training.core.entity.vo.UserListVO;
 import com.example.training.core.mapper.UserMapper;
 import com.example.training.core.service.IUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -51,20 +52,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public List<UserListItemVO> getUserList(UserListRequest userListRequest) {
+    public UserListVO getUserList(UserListRequest userListRequest) {
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<User>();
         Integer currentPage = userListRequest.getPageRequest().getCurrentPage();
         Integer pageSize = userListRequest.getPageRequest().getPageSize();
-        wrapper.select(User::getUserId, User::getJobId, User::getGender, User::getEmail, User::getPhone, User::getRole)
+
+        Long count = userMapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getRole, RoleEnum.USER));
+
+        wrapper.select(User::getUserId, User::getUserName, User::getJobId, User::getGender, User::getEmail, User::getPhone, User::getRole)
                 .eq(User::getRole, RoleEnum.USER)
                 .last("limit " + pageSize + " offset " + ((currentPage - 1) * pageSize));
 
         List<User> userList = userMapper.selectList(wrapper);
 
-        return userList.stream().map(user -> {
+        UserListVO userListVO = new UserListVO();
+        userListVO.setCount(count);
+        userListVO.setUserList(userList.stream().map(user -> {
             UserListItemVO userListItemVO = new UserListItemVO();
             BeanUtils.copyProperties(user, userListItemVO);
             return userListItemVO;
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toList()));
+
+        return userListVO;
     }
 }

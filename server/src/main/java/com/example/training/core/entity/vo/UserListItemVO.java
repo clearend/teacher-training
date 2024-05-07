@@ -11,6 +11,9 @@ public class UserListItemVO {
     @Schema(description = "用户名")
     private String userId;
 
+    @Schema(description = "用户姓名")
+    private String userName;
+
     @Schema(description = "工号")
     private String jobId;
 

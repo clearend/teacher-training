@@ -10,25 +10,29 @@
         </div>
 
         <el-dialog title="新增用户信息" v-model="addDialogFormVisible">
-            <el-form :model="newTable">
-                <el-form-item label="用户姓名" label-width="100px">
-                    <el-input v-model="newTable.name" auto-complete="off"></el-input>
+            <el-form :model="newTable" :rules="rules">
+                <el-form-item label="用户姓名" label-width="100px" prop="name">
+                    <el-input v-model="newTable.userName" auto-complete="off" clearable></el-input>
                 </el-form-item>
-                <el-form-item label="注册地址" label-width="100px">
-                    <el-input v-model="newTable.registeLocation"></el-input>
+                <el-form-item label="工号" label-width="100px" prop="jobId">
+                    <el-input v-model="newTable.jobId"></el-input>
                 </el-form-item>
-                <el-form-item label="注册日期" label-width="100px">
-                    <el-input v-model="newTable.registeDate"></el-input>
+                <el-form-item label="性别" label-width="100px" prop="gender">
+                    <el-select v-model="newTable.gender" placeholder="请选择性别">
+                        <el-option label="男" value="1"></el-option>
+                        <el-option label="女" value="2"></el-option>
+                    </el-select>
+<!--                    <el-input v-model="newTable.registeDate"></el-input>-->
                 </el-form-item>
-                <el-form-item label="账号" label-width="100px">
-                    <el-input v-model="newTable.loginId"></el-input>
+                <el-form-item label="电话" label-width="100px" prop="phone">
+                    <el-input v-model="newTable.phone"></el-input>
                 </el-form-item>
-                <el-form-item label="密码" label-width="100px">
-                    <el-input v-model="newTable.password"></el-input>
+                <el-form-item label="电子邮箱" label-width="100px" prop="email">
+                    <el-input v-model="newTable.email"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="addDialogFormVisible = false">取 消</el-button>
+                <el-button @click="addDialogFormVisible=false">取 消</el-button>
                 <el-button type="primary" @click="addUser">确 定</el-button>
             </div>
         </el-dialog>
@@ -39,10 +43,12 @@
                 highlight-current-row
                 style="width: 100%">
                 <el-table-column type="index" width="100"></el-table-column>
-                <el-table-column property="registeDate" label="注册日期" width="220"></el-table-column>
-                <el-table-column property="name" label="用户姓名" width="220"></el-table-column>
-                <el-table-column property="registeLocation" label="注册地址"></el-table-column>
-                <el-table-column label="操作" width="300">
+                <el-table-column property="userName" label="用户姓名"></el-table-column>
+                <el-table-column property="jobId" label="工号"></el-table-column>
+                <el-table-column property="gender" label="性别"></el-table-column>
+                <el-table-column property="phone" label="手机号码"></el-table-column>
+                <el-table-column property="email" label="电子邮件"></el-table-column>
+                <el-table-column label="操作" width="200">
                     <template slot-scope="scope">
                         <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
                         <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
@@ -63,7 +69,7 @@
             <el-dialog title="修改用户信息" v-model="dialogFormVisible">
                 <el-form :model="selectTable">
                     <el-form-item label="用户姓名" label-width="100px">
-                        <el-input v-model="selectTable.name" auto-complete="off"></el-input>
+                        <el-input v-model="selectTable.userName" auto-complete="off"></el-input>
                     </el-form-item>
                     <el-form-item label="注册地点" label-width="100px">
                         <el-input v-model="selectTable.registeLocation"></el-input>
@@ -88,6 +94,8 @@
 </template>
 
 <script>
+    import {log} from "nightwatch/lib/util/logger";
+
     const demoUserData = [
         {
             registeDate: '2016-05-02',
@@ -232,10 +240,28 @@
         // 可以继续添加更多的数据
     ]
 
-import headTop from '../components/headTop'
-import {getUserList, getUserCount} from '@/api/getData'
+import headTop from '../components/headTop';
+import {getUserList} from '@/api/getDataLocal';
 export default {
-    data(){
+    data() {
+        var checkNumber = (rule, value, callback) => {
+            setTimeout(() => {
+                if (!Number.isInteger(value)) {
+                    callback(new Error('请输入数字值'));
+                } else {
+                    callback();
+                }
+            }, 1000);
+        };
+
+        var checkEmail = (rule, value, callback) => {
+            if (/^\w{1,64}@[a-z0-9\-]{1,256}(\.[a-z]{2,6}){1,2}$/i.test(value) == false) {
+                callback(new Error("邮箱格式错误"));
+            } else {
+                callback();
+            }
+        }
+
         return {
             tableData: [],
             currentRow: null,
@@ -247,25 +273,36 @@ export default {
             newTable: {},
             selectTable: {},
             dialogFormVisible: false,
+            rules: {
+                name: [{required: true, message: '请输入姓名', trigger: 'blur'}],
+                jobId: [
+                    {required: true, message: '请输入工号', trigger: 'blur'},
+                    {validator: checkNumber, trigger: 'blur'},
+                ],
+                gender: [
+                    {required: true, message: '请选择性别', trigger: 'blur'},
+                ],
+                phone: [
+                    {required: true, message: '请输入手机号码', trigger: 'blur'},
+                    {pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号码", trigger: "blur"}
+                ],
+                email: [
+                    {required: true, message: '请输入电子邮箱', trigger: 'blur'},
+                    {pattern: /^\w{1,64}@[a-z0-9\-]{1,256}(\.[a-z]{2,6}){1,2}$/, message: "请输入正确的电子邮箱", trigger: "blur"}
+                ]
+            },
         }
     },
     components: {
         headTop,
     },
-    created(){
+    created() {
         this.initData();
     },
     methods: {
-        async initData(){
-            try{
-                // const countData = await getUserCount();
-                // if (countData.status == 1) {
-                //     this.count = countData.count;
-                // }else{
-                //     throw new Error('获取数据失败');
-                // }
-                this.getUsers();
-                this.count = demoUserData.length;
+        async initData() {
+            try {
+                await this.getUsers();
             } catch(err) {
                 console.log('获取数据失败', err);
             }
@@ -275,24 +312,30 @@ export default {
         },
         handleCurrentChange(val) {
             this.currentPage = val;
-            this.offset = (val - 1)*this.limit;
+            this.offset = (val - 1) * this.limit;
             this.getUsers()
         },
-        getUsers(){
-            // const Users = await getUserList({offset: this.offset, limit: this.limit});
-            // this.tableData = [];
-            // Users.forEach(item => {
-            //     const tableData = {};
-            //     tableData.name = item.name;
-            //     tableData.registeDate = item.registeDate;
-            //     tableData.registeLocation = item.registeLocation;
-            //     // this.tableData.push(tableData);
-            // })
-            this.tableData = demoUserData.slice(this.offset, this.offset + this.limit);
+        async getUsers() {
+            const res = await getUserList({
+                "pageRequest": {
+                    "currentPage": this.currentPage,
+                    "pageSize": this.limit,
+                }
+            });
+
+            console.log(res.data.data)
+
+            if (res.data.code === 200) {
+                this.tableData = res.data.data.userList;
+                this.count = res.data.data.count;
+            } else {
+                this.$message({
+                    type: 'error',
+                    message: res.data.msg
+                });
+            }
         },
         handleEdit(row) {
-            // this.getSelectItemData(row, 'edit')
-            // this.dialogFormVisible = true;
             this.selectTable = row;
             this.dialogFormVisible = true;
         },

@@ -65,10 +65,13 @@ export default {
                     const res = await login({username: this.loginForm.username, password: this.loginForm.password})
                     // const res = {data: {code: 1900}}
                     if (res.data.code === 200) {
+                        localStorage.setItem('userId', res.data.data.userId)
+
                         this.$message({
                             type: 'success',
                             message: '登录成功'
                         });
+
                         if (this.loginForm.username === 'user') {
                             this.$router.push('manageUser')
                             return;
