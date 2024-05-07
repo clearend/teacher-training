@@ -2,6 +2,7 @@ package com.example.training.core.controller;
 
 import com.example.training.common.ResultResponse;
 import com.example.training.common.exceptions.BizException;
+import com.example.training.core.entity.vo.SysFileVO;
 import com.example.training.core.service.ISysFileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,7 +30,7 @@ public class SysFileController {
 
     @PostMapping("/upload")
     @Operation(summary = "上传文件")
-    public ResultResponse<?> upload(@RequestParam("file") MultipartFile file) {
+    public ResultResponse<SysFileVO> upload(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             throw new BizException("文件为空");
         }

@@ -4,12 +4,14 @@ import cn.hutool.core.util.IdUtil;
 import com.example.training.common.ResultResponse;
 import com.example.training.common.enums.StatusEnum;
 import com.example.training.core.entity.SysFile;
+import com.example.training.core.entity.vo.SysFileVO;
 import com.example.training.core.mapper.SysFileMapper;
 import com.example.training.core.service.ISysFileService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,10 +35,10 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile> impl
     @Resource
     private SysFileMapper sysFileMapper;
 
-    private static final String DOMAIN = "http://localhost:8091/files/";
+    private static final String DOMAIN = "http://localhost:8901/files/";
 
     @Override
-    public ResultResponse<?> upload(MultipartFile file) {
+    public ResultResponse<SysFileVO> upload(MultipartFile file) {
         ApplicationHome applicationHome = new ApplicationHome(this.getClass());
         String basePath = applicationHome.getDir().getParentFile().getParentFile().getAbsolutePath() + "/src/main/resources/static/files/";
         String originalFileName = file.getOriginalFilename();
@@ -58,6 +60,9 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile> impl
         sysFile.setFileUrl(DOMAIN + fileName);
         sysFileMapper.insert(sysFile);
 
-        return ResultResponse.success("上传成功");
+        SysFileVO sysFileVO = new SysFileVO();
+        BeanUtils.copyProperties(sysFile, sysFileVO);
+
+        return ResultResponse.success(sysFileVO);
     }
 }

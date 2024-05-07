@@ -13,6 +13,9 @@ spring:
 
 server:
   port: 8901
+  servlet:
+    encoding:
+      force: true
 
 springdoc:
   swagger-ui:

@@ -3,6 +3,7 @@ package com.example.training.core.service;
 import com.example.training.common.ResultResponse;
 import com.example.training.core.entity.SysFile;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.training.core.entity.vo.SysFileVO;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -15,5 +16,5 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface ISysFileService extends IService<SysFile> {
 
-    ResultResponse<?> upload(MultipartFile file);
+    ResultResponse<SysFileVO> upload(MultipartFile file);
 }
