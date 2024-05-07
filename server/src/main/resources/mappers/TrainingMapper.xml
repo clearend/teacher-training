@@ -1,5 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.training.core.mapper.TrainingMapper">
+    <insert id="createTraining">
+        insert into training(training_id, training_name, training_type, training_time, training_address,
+                             training_content,create_time, update_time, is_del)
+        values (#{trainingId}, #{trainingName}, #{trainingType}, #{trainingTime}, #{trainingAddress},
+                #{trainingContent}, NOW(), NOW(), #{isDel})
+    </insert>
+
+    <select id="findTrainList" resultType="com.example.training.core.entity.vo.FindTrainListVO">
+        select
+        from training
+        where is_del !='1'
+        <if test='trainingId!=null and trainingId!=""'>
+            and training.training_id=#{trainingId}
+        </if>
+    </select>
+
+    <select id="getComp" resultType="Float">
+        SELECT
+                SUM(CASE WHEN audit_status='1' THEN 1 ELSE 0 END) / NULLIF(COUNT(*), 0) AS audit_status_ratio
+        FROM (
+                 SELECT
+                     training_audit.audit_status
+                 FROM
+                     training_user
+                         LEFT OUTER JOIN
+                     training_audit ON training_audit.training_id = training_user.training_id
+                 WHERE
+                     training_user.training_id = #{trainingId} and training_user.is_del != '1'
+             ) AS t;
+    </select>
 
 </mapper>

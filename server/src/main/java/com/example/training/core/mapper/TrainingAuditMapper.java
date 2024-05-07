@@ -13,4 +13,5 @@ import com.github.yulichang.base.MPJBaseMapper;
  */
 public interface TrainingAuditMapper extends MPJBaseMapper<TrainingAudit> {
 
+    void examineTraining();
 }

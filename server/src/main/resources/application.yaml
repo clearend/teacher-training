@@ -35,6 +35,7 @@ knife4j:
     language: zh_cn
 
 mybatis-plus:
+  mapper-locations: classpath:mappers/*.xml
   global-config:
     db-config:
       logic-delete-field: is_del

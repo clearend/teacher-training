@@ -2,6 +2,10 @@ package com.example.training.core.service;
 
 import com.example.training.core.entity.Training;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.training.core.entity.request.CreateTrainingRequest;
+import com.example.training.core.entity.vo.FindTrainListVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +17,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ITrainingService extends IService<Training> {
 
+    void createTraining(CreateTrainingRequest createTrainingRequest);
+
+    List<FindTrainListVO> findTrainList(CreateTrainingRequest createTrainingRequest);
 }
