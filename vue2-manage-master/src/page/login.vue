@@ -25,7 +25,9 @@
 </template>
 
 <script>
-import {login, getAdminInfo} from '@/api/getData'
+import {etAdminInfo} from '@/api/getData'
+import {login} from "@/api/getDataLocal";
+// import axios from "axios"
 import {mapActions, mapState} from 'vuex'
 
 export default {
@@ -48,20 +50,21 @@ export default {
     },
     mounted(){
         this.showLogin = true;
-        if (!this.adminInfo.id) {
-            this.getAdminData()
-        }
+        // if (!this.adminInfo.id) {
+        //     this.getAdminData()
+        // }
     },
     computed: {
-        ...mapState(['adminInfo']),
+        // ...mapState(['adminInfo']),
     },
     methods: {
-        ...mapActions(['getAdminData']),
+        // ...mapActions(['getAdminData']),
         async submitForm(formName) {
             this.$refs[formName].validate(async (valid) => {
                 if (valid) {
-                    const res = await login({user_name: this.loginForm.username, password: this.loginForm.password})
-                    if (res.status == 1) {
+                    const res = await login({username: this.loginForm.username, password: this.loginForm.password})
+                    // const res = {data: {code: 1900}}
+                    if (res.data.code === 200) {
                         this.$message({
                             type: 'success',
                             message: '登录成功'
@@ -71,10 +74,10 @@ export default {
                             return;
                         }
                         this.$router.push('manage')
-                    }else{
+                    } else {
                         this.$message({
                             type: 'error',
-                            message: res.message
+                            message: res.data.msg
                         });
                     }
                 } else {
