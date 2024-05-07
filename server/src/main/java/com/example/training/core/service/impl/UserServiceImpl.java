@@ -3,8 +3,11 @@ package com.example.training.core.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.training.common.exceptions.BizException;
 import com.example.training.core.entity.User;
+import com.example.training.core.entity.enums.RoleEnum;
 import com.example.training.core.entity.request.LoginRequest;
+import com.example.training.core.entity.request.UserListRequest;
 import com.example.training.core.entity.vo.LoginVO;
+import com.example.training.core.entity.vo.UserListItemVO;
 import com.example.training.core.mapper.UserMapper;
 import com.example.training.core.service.IUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -12,7 +15,9 @@ import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -43,5 +48,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         LoginVO loginVO = new LoginVO();
         BeanUtils.copyProperties(user, loginVO);
         return loginVO;
+    }
+
+    @Override
+    public List<UserListItemVO> getUserList(UserListRequest userListRequest) {
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<User>();
+        Integer currentPage = userListRequest.getPageRequest().getCurrentPage();
+        Integer pageSize = userListRequest.getPageRequest().getPageSize();
+        wrapper.select(User::getUserId, User::getJobId, User::getGender, User::getEmail, User::getPhone, User::getRole)
+                .eq(User::getRole, RoleEnum.USER)
+                .last("limit " + pageSize + " offset " + ((currentPage - 1) * pageSize));
+
+        List<User> userList = userMapper.selectList(wrapper);
+
+        return userList.stream().map(user -> {
+            UserListItemVO userListItemVO = new UserListItemVO();
+            BeanUtils.copyProperties(user, userListItemVO);
+            return userListItemVO;
+        }).collect(Collectors.toList());
     }
 }

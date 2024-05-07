@@ -3,7 +3,11 @@ package com.example.training.core.service;
 import com.example.training.core.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.training.core.entity.request.LoginRequest;
+import com.example.training.core.entity.request.UserListRequest;
 import com.example.training.core.entity.vo.LoginVO;
+import com.example.training.core.entity.vo.UserListItemVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,4 +20,6 @@ import com.example.training.core.entity.vo.LoginVO;
 public interface IUserService extends IService<User> {
 
     LoginVO login(LoginRequest loginRequest);
+
+    List<UserListItemVO> getUserList(UserListRequest userListRequest);
 }
