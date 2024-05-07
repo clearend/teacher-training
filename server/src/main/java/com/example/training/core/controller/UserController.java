@@ -1,10 +1,7 @@
 package com.example.training.core.controller;
 
 import com.example.training.common.ResultResponse;
-import com.example.training.common.annotations.PermissionAccess;
-import com.example.training.common.enums.StatusEnum;
 import com.example.training.core.entity.request.LoginRequest;
-import com.example.training.core.entity.vo.LoginVO;
 import com.example.training.core.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,14 +25,11 @@ public class UserController {
     @Resource
     private IUserService userService;
 
-    @PermissionAccess
     @PostMapping("/login")
     @Operation(summary = "用户登录")
     public ResultResponse<?> login(
             @RequestBody LoginRequest loginRequest
     ) {
-        LoginVO loginVO;
-        loginVO = userService.login(loginRequest);
-        return ResultResponse.success(loginVO);
+        return ResultResponse.success(userService.login(loginRequest));
     }
 }
