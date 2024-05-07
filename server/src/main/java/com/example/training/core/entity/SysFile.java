@@ -40,7 +40,7 @@ public class SysFile implements Serializable {
     private String filePath;
 
     @Schema(description = "文件类型")
-    private Integer fileType;
+    private String fileType;
 
     @Schema(description = "文件url")
     private String fileUrl;

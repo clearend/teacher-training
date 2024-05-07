@@ -6,6 +6,10 @@ spring:
     url: jdbc:mysql://114.116.252.42:3306/teacher_training?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: root
     password: 3ADFKdPY@8G!cs@D
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
 
 server:
   port: 8901

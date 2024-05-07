@@ -28,12 +28,25 @@ public class ResultResponse<T> implements Serializable {
 
     /**
      * 封装成功响应的方法
+     * @return response
+     * @param <T> 响应数据类型
+     */
+    public static <T> ResultResponse<T> success() {
+        ResultResponse<T> response = new ResultResponse<>();
+        response.setMsg("请求成功");
+        response.setCode(StatusEnum.SUCCESS.code);
+        return response;
+    }
+
+    /**
+     * 封装成功响应的方法
      * @param data 响应数据
      * @return response
      * @param <T> 响应数据类型
      */
     public static <T> ResultResponse<T> success(T data) {
         ResultResponse<T> response = new ResultResponse<>();
+        response.setMsg("请求成功");
         response.setData(data);
         response.setCode(StatusEnum.SUCCESS.code);
         return response;
