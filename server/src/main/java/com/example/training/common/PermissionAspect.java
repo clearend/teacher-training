@@ -6,9 +6,11 @@ import com.example.training.core.entity.User;
 import com.example.training.core.mapper.UserMapper;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,13 +29,13 @@ public class PermissionAspect {
     @Resource
     private UserMapper userMapper;
 
-    @Pointcut("@annotation(com.example.training.common.annotations.PermissionAccess)")
+//    @Pointcut("@annotation(com.example.training.common.annotations.PermissionAccess)")
     public void checkPermission() {
     }
 
     @ResponseBody
-    @Around("checkPermission()")
-    public Object isHasPermission(ProceedingJoinPoint joinPoint) throws Throwable {
+//    @Before("checkPermission()")
+    public void isHasPermission(JoinPoint joinPoint) throws Throwable {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         assert attributes != null;
         HttpServletRequest request = attributes.getRequest();
@@ -48,7 +50,6 @@ public class PermissionAspect {
             throw new PermissionDenyException("权限不足");
         } else {
             request.setAttribute("user", user);
-            return joinPoint.proceed();
         }
 
     }
