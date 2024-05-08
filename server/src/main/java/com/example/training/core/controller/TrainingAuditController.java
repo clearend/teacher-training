@@ -11,11 +11,8 @@ import com.example.training.core.service.ITrainingAuditService;
 import com.example.training.core.service.ITrainingService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -26,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author coder
  * @since 2024-05-06
  */
-@Controller
+@RestController
 @RequestMapping("/core/trainingAudit")
 public class TrainingAuditController {
     @Resource
