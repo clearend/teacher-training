@@ -4,25 +4,28 @@ import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.training.common.exceptions.BizException;
 import com.example.training.core.entity.Training;
+import com.example.training.core.entity.TrainingUser;
+import com.example.training.core.entity.User;
 import com.example.training.core.entity.dto.TrainingListDTO;
 import com.example.training.core.entity.enums.TrainTypeEnum;
 import com.example.training.core.entity.request.CreateTrainingRequest;
 import com.example.training.core.entity.request.SingleIdRequest;
 import com.example.training.core.entity.request.TrainingListRequest;
 import com.example.training.core.entity.vo.FindTrainListVO;
+import com.example.training.core.entity.vo.TrainingInfoVO;
 import com.example.training.core.entity.vo.TrainingListItemVO;
+import com.example.training.core.entity.vo.TrainingUserListItemVO;
 import com.example.training.core.mapper.TrainingMapper;
+import com.example.training.core.mapper.TrainingUserMapper;
 import com.example.training.core.mapper.UserMapper;
 import com.example.training.core.service.ITrainingService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * <p>
@@ -36,6 +39,9 @@ import java.util.Objects;
 public class TrainingServiceImpl extends ServiceImpl<TrainingMapper, Training> implements ITrainingService {
     @Resource
     private TrainingMapper trainingMapper;
+
+    @Resource
+    private TrainingUserMapper trainingUserMapper;
 
     /**
      * 新建培训
@@ -99,5 +105,31 @@ public class TrainingServiceImpl extends ServiceImpl<TrainingMapper, Training> i
         }
 
         trainingMapper.deleteById(training.getId());
+    }
+
+    @Override
+    public TrainingInfoVO findTrainingInfo(SingleIdRequest singleIdRequest) {
+        Training training = trainingMapper.selectOne(new LambdaQueryWrapper<Training>().eq(Training::getTrainingId, singleIdRequest.getId()));
+        if (Objects.isNull(training)) {
+            throw new BizException("待查询培训不存在");
+        }
+
+        MPJLambdaWrapper<TrainingUser> wrapper = new MPJLambdaWrapper<>();
+        wrapper.select(User::getUserId, User::getUserName, User::getPhone, User::getEmail, User::getJobId, User::getGender)
+                .select(TrainingUser::getStatus)
+                .leftJoin(User.class, User::getUserId, TrainingUser::getUserId)
+                .eq(TrainingUser::getTrainingId, singleIdRequest.getId());
+
+        List<TrainingUserListItemVO> trainingUserListItemVOList = trainingUserMapper.selectJoinList(TrainingUserListItemVO.class, wrapper);
+
+        TrainingInfoVO trainingInfoVO = new TrainingInfoVO();
+        BeanUtils.copyProperties(training, trainingInfoVO);
+        if (trainingUserListItemVOList != null && !trainingUserListItemVOList.isEmpty()) {
+            trainingInfoVO.setTrainingUserList(trainingUserListItemVOList);
+        } else {
+            trainingInfoVO.setTrainingUserList(Collections.emptyList());
+        }
+
+        return trainingInfoVO;
     }
 }

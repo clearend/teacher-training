@@ -6,6 +6,7 @@ import com.example.training.core.entity.request.CreateTrainingRequest;
 import com.example.training.core.entity.request.SingleIdRequest;
 import com.example.training.core.entity.request.TrainingListRequest;
 import com.example.training.core.entity.vo.FindTrainListVO;
+import com.example.training.core.entity.vo.TrainingInfoVO;
 
 import java.util.List;
 
@@ -24,4 +25,6 @@ public interface ITrainingService extends IService<Training> {
     FindTrainListVO findTrainList(TrainingListRequest createTrainingRequest);
 
     void deleteTraining(SingleIdRequest singleIdRequest);
+
+    TrainingInfoVO findTrainingInfo(SingleIdRequest singleIdRequest);
 }
