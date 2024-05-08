@@ -28,4 +28,6 @@ public interface ITrainingService extends IService<Training> {
     TrainingInfoVO findTrainingInfo(SingleIdRequest singleIdRequest);
 
     List<UserListItemVO> findNotInUserList(SingleIdRequest singleIdRequest);
+
+    void updateTraining(CreateTrainingRequest createTrainingRequest);
 }

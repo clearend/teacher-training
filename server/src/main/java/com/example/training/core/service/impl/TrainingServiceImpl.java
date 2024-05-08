@@ -2,6 +2,7 @@ package com.example.training.core.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.example.training.common.exceptions.BizException;
 import com.example.training.core.entity.Training;
 import com.example.training.core.entity.TrainingUser;
@@ -157,5 +158,17 @@ public class TrainingServiceImpl extends ServiceImpl<TrainingMapper, Training> i
         }
 
         return notInUserList;
+    }
+
+    @Override
+    public void updateTraining(CreateTrainingRequest createTrainingRequest) {
+        Training training = trainingMapper.selectOne(new LambdaQueryWrapper<Training>().eq(Training::getTrainingId, createTrainingRequest.getTrainingId()));
+        if (Objects.isNull(training)) {
+            throw new BizException("待修改培训不存在");
+        }
+
+        Training newTraining = new Training();
+        BeanUtils.copyProperties(createTrainingRequest, newTraining);
+        trainingMapper.update(newTraining, new LambdaUpdateWrapper<Training>().eq(Training::getId, training.getId()));
     }
 }
