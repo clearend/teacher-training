@@ -52,7 +52,7 @@
                 <el-table-column label="操作" width="300">
                     <template slot-scope="scope">
                         <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
-                        <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                        <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -92,7 +92,7 @@
                         <el-table-column prop="date" label="报名日期"></el-table-column>
                         <el-table-column label="操作" >
                         <template slot-scope="scope">
-                            <el-button size="small" type="danger" @click="deleteItem(scope.$index)">删除</el-button>
+                            <el-button size="small" type="danger" @click="deleteItem(scope.row)">删除</el-button>
                         </template>
                         </el-table-column>
 					</el-table>
@@ -143,6 +143,8 @@
 </template>
 
 <script>
+    import {log} from "nightwatch/lib/util/logger";
+
     const demoLearnData = [
         {
             "name": "创新教育理念研讨会",
@@ -348,7 +350,6 @@
                 }));
 
                 if (res.data.code === 200) {
-                    console.log(res.data.data);
                     this.count = res.data.data.count;
                     this.tableData = res.data.data.trainingList;
                     this.tableData.forEach(item => {
@@ -357,12 +358,9 @@
                 } else {
                     this.$message({
                         type: 'error',
-                        message: res.data.msg
+                        message: res.data.msg,
                     });
                 }
-            },
-            async getLearns(){
-                this.tableData = demoLearnData.slice(this.offset, this.offset + this.limit);
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
@@ -373,32 +371,33 @@
                 this.getTrainingList();
             },
             handleEdit(row) {
-                // console.log(row)
                 this.selectTable = row;
                 this.selectTable.trainList = demoTrainList;
                 this.dialogFormVisible = true;
             },
-            handleDelete(index, row) {
-                try{
-                    demoLearnData.splice(this.offset + index, 1);
-                    if (1) {
+            handleDelete(row) {
+                this.$confirm("确定要删除该培训？", "提示", {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    showCancelButton: true,
+                    showClose: false,
+                    closeOnClickModal: false
+                }).then(async () => {
+                    const res = await postMethod('/core/training/delete', JSON.stringify({id: row.trainingId}));
+                    if (res.data.code === 200) {
                         this.$message({
                             type: 'success',
-                            message: '删除培训信息成功'
+                            message: '删除成功',
                         });
-                        this.tableData.splice(index, 1);
-                        this.tableData = demoLearnData.slice(this.offset, this.offset + this.limit);
-                        this.count = demoLearnData.length;
-                    }else{
-                        throw new Error(res.message)
+                        await this.getTrainingList();
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: '删除失败',
+                        });
                     }
-                }catch(err){
-                    this.$message({
-                        type: 'error',
-                        message: err.message
-                    });
-                    console.log('删除培训信息失败')
-                }
+                }).catch();
             },
             updateLearn() {
                 this.dialogFormVisible = false;
@@ -478,13 +477,31 @@
                 }
                 return '';
             },
-            deleteItem(index) {
-                this.selectTable.trainList.splice(index, 1);
-                this.$message({
-                    type: 'success',
-                    message: '删除成功'
-                });
-                // this.selectTable.trainList = demoTrainList;
+            deleteItem(row) {
+                console.log(row)
+                this.$confirm("确定要删除该培训？", "提示", {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    showCancelButton: true,
+                    showClose: false,
+                    closeOnClickModal: false
+                }).then(async () => {
+                    const res = await postMethod('/core/training/delete', JSON.stringify({id: row.trainingId}));
+                    if (res.data.code === 200) {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功',
+                        });
+                        await this.getTrainingList();
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: '删除失败',
+                        });
+                    }
+                }).catch();
+
             },
             addItem() {
                 // this.addItemList = {

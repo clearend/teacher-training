@@ -175,7 +175,7 @@ export default {
             this.dialogFormVisible = true;
         },
         async handleDelete(row) {
-            this.$confirm("确定要删除改用户？", "提示", {
+            this.$confirm("确定要删除该用户？", "提示", {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning',

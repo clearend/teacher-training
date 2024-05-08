@@ -3,6 +3,7 @@ package com.example.training.core.controller;
 import com.example.training.common.ResultResponse;
 import com.example.training.common.annotations.PermissionAccess;
 import com.example.training.core.entity.request.CreateTrainingRequest;
+import com.example.training.core.entity.request.SingleIdRequest;
 import com.example.training.core.entity.request.TrainingListRequest;
 import com.example.training.core.entity.request.UserListRequest;
 import com.example.training.core.entity.vo.FindTrainListVO;
@@ -49,6 +50,14 @@ public class TrainingController {
     public ResultResponse<FindTrainListVO> findTrainList(@RequestBody TrainingListRequest trainingListRequest) {
         //入参 培训id
         return ResultResponse.success(iTrainingService.findTrainList(trainingListRequest));
+    }
+
+    @PermissionAccess
+    @PostMapping("/delete")
+    @Operation(summary = "删除培训")
+    public ResultResponse<String> deleteTraining(@RequestBody SingleIdRequest singleIdRequest) {
+        iTrainingService.deleteTraining(singleIdRequest);
+        return ResultResponse.success();
     }
 
 }

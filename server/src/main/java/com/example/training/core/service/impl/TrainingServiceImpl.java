@@ -2,10 +2,12 @@ package com.example.training.core.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.example.training.common.exceptions.BizException;
 import com.example.training.core.entity.Training;
 import com.example.training.core.entity.dto.TrainingListDTO;
 import com.example.training.core.entity.enums.TrainTypeEnum;
 import com.example.training.core.entity.request.CreateTrainingRequest;
+import com.example.training.core.entity.request.SingleIdRequest;
 import com.example.training.core.entity.request.TrainingListRequest;
 import com.example.training.core.entity.vo.FindTrainListVO;
 import com.example.training.core.entity.vo.TrainingListItemVO;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -85,5 +88,16 @@ public class TrainingServiceImpl extends ServiceImpl<TrainingMapper, Training> i
 //            }
 //        }
         return findTrainListVO;
+    }
+
+    @Override
+    public void deleteTraining(SingleIdRequest singleIdRequest) {
+        Training training = trainingMapper.selectOne(new LambdaQueryWrapper<Training>().eq(Training::getTrainingId, singleIdRequest.getId()));
+
+        if (Objects.isNull(training)) {
+            throw new BizException("待删除培训不存在");
+        }
+
+        trainingMapper.deleteById(training.getId());
     }
 }
