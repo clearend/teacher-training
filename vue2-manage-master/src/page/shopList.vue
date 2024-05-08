@@ -118,8 +118,8 @@
 				</el-row>
 
                 <div slot="footer" class="dialog-footer">
-                    <el-button @click="updateTrainingInfoSwitch === true ? dialogFormVisible = false : updateTrainingInfoSwitch = true">取 消</el-button>
-                    <el-button type="warning" @click="updateTrainingInfoSwitch = false" :disabled="!updateTrainingInfoSwitch">编辑</el-button>
+                    <el-button @click="updateTrainingInfoSwitch === true ? dialogFormVisible = false : updateTrainingInfoSwitch = true">关 闭</el-button>
+                    <el-button type="warning" @click="updateTrainingInfoSwitch = false" :disabled="!updateTrainingInfoSwitch">编 辑</el-button>
                     <el-button type="primary" @click="updateLearn" :disabled="updateTrainingInfoSwitch">确 定</el-button>
                 </div>
             </el-dialog>
@@ -159,62 +159,12 @@
 
 <script>
 
-    import th from "element-ui/lib/locale/lang/th";
-
-    const demoTrainList = [
-        {
-            name: "张三",
-            jobId: "2019001",
-            date: "2020-01-01",
-        },
-        {
-            name: "李四",
-            jobId: "2019002",
-            date: "2020-01-02",
-        },
-        {
-            name: "王五",
-            jobId: "2019003",
-            date: "2020-01-03",
-        },
-    ]
-    const demoTeacherList = [
-        {
-            name: "李占峰",
-            jobId: "2019001",
-        },
-        {
-            name: "张永年",
-            jobId: "2019002",
-        },
-        {
-            name: "崔宇",
-            jobId: "2019003",
-        },
-        {
-            name: "周志华",
-            jobId: "2019004",
-        },
-        {
-            name: "李建华",
-            jobId: "2019005",
-        },
-        {
-            name: "王小云",
-            jobId: "2019006",
-        },
-    ]
-
-
     import headTop from '../components/headTop'
     import {postMethod} from "@/api/getDataLocal";
-    import {baseUrl, baseImgPath} from '@/config/env'
+    import de from "element-ui/lib/locale/lang/de";
     export default {
         data() {
             return {
-                baseUrl,
-                baseImgPath,
-                city: {},
                 offset: 0,
                 limit: 15,
                 count: 0,
@@ -295,6 +245,12 @@
 
                 if (res.data.code === 200) {
                     this.selectTable = res.data.data;
+                    switch (this.selectTable.trainingType) {
+                        case "校级": this.selectTable.trainingType = "100"; break;
+                        case "省市级": this.selectTable.trainingType = "200"; break;
+                        case "国家级": this.selectTable.trainingType = "300"; break;
+                        default: this.selectTable.trainingType = "100";
+                    }
                     this.selectTable.trainingTime = new Date(this.selectTable.trainingTime);
                 } else {
                     this.$message({
@@ -328,23 +284,30 @@
                 }).catch();
             },
             updateLearn() {
-                this.dialogFormVisible = false;
-                try{
-                    if (1) {
-                        this.$message({
-                            type: 'success',
-                            message: '更新培训信息成功'
-                        });
-                        // this.getResturants();
-                    }else{
-                        this.$message({
-                            type: 'error',
-                            message: res.message
-                        });
+                this.$refs.trainingInfoForm.validate(async (valid) => {
+                    if (valid) {
+                        var updateTrainingInfo = this.selectTable
+                        updateTrainingInfo.trainingTime = updateTrainingInfo.trainingTime.valueOf();
+
+                        console.log(updateTrainingInfo)
+
+                        const res = await postMethod('/core/training/update', JSON.stringify(updateTrainingInfo));
+                        if (res.data.code === 200) {
+                            this.$message({
+                                type: 'success',
+                                message: '更新培训信息成功'
+                            });
+
+                            this.updateTrainingInfoSwitch = true;
+                            await this.getTrainingInfo(updateTrainingInfo.trainingId);
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                message: res.data.msg,
+                            });
+                        }
                     }
-                }catch(err){
-                    console.log('更新培训信息失败', err);
-                }
+                });
             },
             handleAdd() {
                 this.newTable = {
@@ -469,14 +432,6 @@
                     this.teacherList = res.data.data;
                 }
 
-                demoTeacherList.forEach((element, index) => {
-                    this.teacherList.push({
-                        key: element.jobId,
-                        value: index,
-                        label: element.name + element.jobId,
-                    })
-                });
-                // console.log(this.teacherList);
                 this.specsFormVisible = true;
             }
         },

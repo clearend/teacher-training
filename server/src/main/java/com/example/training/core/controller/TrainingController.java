@@ -72,4 +72,12 @@ public class TrainingController {
         return ResultResponse.success(iTrainingService.findTrainingInfo(singleIdRequest));
     }
 
+    @PermissionAccess
+    @PostMapping("/update")
+    @Operation(summary = "修改培训")
+    public ResultResponse<String> updateTraining(@RequestBody CreateTrainingRequest createTrainingRequest) {
+        iTrainingService.updateTraining(createTrainingRequest);
+        return ResultResponse.success("success");
+    }
+
 }
