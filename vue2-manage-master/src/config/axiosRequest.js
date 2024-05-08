@@ -9,6 +9,7 @@ const serviceAxios = axios.create({
 serviceAxios.interceptors.request.use(
     (config) => {
         config.headers["userId"] = localStorage.getItem("userId");
+        config.headers["Content-Type"] = "application/json";
         return config;
     },
     (error) => {

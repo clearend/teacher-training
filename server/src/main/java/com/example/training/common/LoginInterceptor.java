@@ -24,7 +24,9 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response, @Nonnull Object handler) {
         //获取方法处理器
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
+        if (!(handler instanceof HandlerMethod handlerMethod)) {
+            return false;
+        }
         if (handlerMethod.getMethodAnnotation(PermissionAccess.class) == null) {
             return true;
         }

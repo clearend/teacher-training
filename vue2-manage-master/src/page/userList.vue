@@ -10,15 +10,16 @@
         </div>
 
         <el-dialog title="新增用户信息" v-model="addDialogFormVisible">
-            <el-form :model="newTable" :rules="rules">
-                <el-form-item label="用户姓名" label-width="100px" prop="name">
-                    <el-input v-model="newTable.userName" auto-complete="off" clearable></el-input>
+            <el-form :model="newTable" :rules="rules" ref="addUserForm">
+                <el-form-item label="用户姓名" label-width="100px" prop="userName">
+                    <el-input v-model="newTable.userName" auto-complete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="工号" label-width="100px" prop="jobId">
                     <el-input v-model="newTable.jobId"></el-input>
                 </el-form-item>
                 <el-form-item label="性别" label-width="100px" prop="gender">
                     <el-select v-model="newTable.gender" placeholder="请选择性别">
+                        <el-option label="未知" value="0"></el-option>
                         <el-option label="男" value="1"></el-option>
                         <el-option label="女" value="2"></el-option>
                     </el-select>
@@ -51,7 +52,7 @@
                 <el-table-column label="操作" width="200">
                     <template slot-scope="scope">
                         <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
-                        <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                        <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -67,21 +68,28 @@
             </div>
 
             <el-dialog title="修改用户信息" v-model="dialogFormVisible">
-                <el-form :model="selectTable">
-                    <el-form-item label="用户姓名" label-width="100px">
+                <el-form :model="selectTable" ref="updateUserForm" :rules="rules">
+                    <el-form-item label="用户姓名" label-width="100px" prop="userName">
                         <el-input v-model="selectTable.userName" auto-complete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="注册地点" label-width="100px">
-                        <el-input v-model="selectTable.registeLocation"></el-input>
+                    <el-form-item label="工号" label-width="100px" prop="jobId">
+                        <el-input v-model.number="selectTable.jobId"></el-input>
                     </el-form-item>
-                    <el-form-item label="注册日期" label-width="100px">
-                        <el-input v-model="selectTable.registeDate"></el-input>
+                    <el-form-item label="密码" label-width="100px" prop="password">
+                        <el-input v-model="selectTable.password" type="password"></el-input>
                     </el-form-item>
-                    <el-form-item label="账号" label-width="100px">
-                        <el-input v-model="selectTable.loginId"></el-input>
+                    <el-form-item label="性别" label-width="100px" prop="gender">
+                        <el-select v-model="selectTable.gender" placeholder="请选择性别">
+                            <el-option label="未知" value="0"></el-option>
+                            <el-option label="男" value="1"></el-option>
+                            <el-option label="女" value="2"></el-option>
+                        </el-select>
                     </el-form-item>
-                    <el-form-item label="密码" label-width="100px">
-                        <el-input v-model="selectTable.password"></el-input>
+                    <el-form-item label="电话" label-width="100px" prop="phone">
+                        <el-input v-model="selectTable.phone"></el-input>
+                    </el-form-item>
+                    <el-form-item label="电子邮箱" label-width="100px" prop="email">
+                        <el-input v-model="selectTable.email"></el-input>
                     </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
@@ -94,9 +102,7 @@
 </template>
 
 <script>
-    import {log} from "nightwatch/lib/util/logger";
-
-    const demoUserData = [
+const demoUserData = [
         {
             registeDate: '2016-05-02',
             name: '张丽丽',
@@ -238,30 +244,12 @@
             password: '123456',
         }
         // 可以继续添加更多的数据
-    ]
+]
 
 import headTop from '../components/headTop';
-import {getUserList} from '@/api/getDataLocal';
+import {getUserList, getUserInfo, postMethod} from '@/api/getDataLocal';
 export default {
     data() {
-        var checkNumber = (rule, value, callback) => {
-            setTimeout(() => {
-                if (!Number.isInteger(value)) {
-                    callback(new Error('请输入数字值'));
-                } else {
-                    callback();
-                }
-            }, 1000);
-        };
-
-        var checkEmail = (rule, value, callback) => {
-            if (/^\w{1,64}@[a-z0-9\-]{1,256}(\.[a-z]{2,6}){1,2}$/i.test(value) == false) {
-                callback(new Error("邮箱格式错误"));
-            } else {
-                callback();
-            }
-        }
-
         return {
             tableData: [],
             currentRow: null,
@@ -274,11 +262,9 @@ export default {
             selectTable: {},
             dialogFormVisible: false,
             rules: {
-                name: [{required: true, message: '请输入姓名', trigger: 'blur'}],
-                jobId: [
-                    {required: true, message: '请输入工号', trigger: 'blur'},
-                    {validator: checkNumber, trigger: 'blur'},
-                ],
+                userName: [{required: true, message: '请输入姓名', trigger: 'blur'}],
+                jobId: [{required: true, message: '请输入正确的工号', trigger: 'blur'}],
+                password: [{required: true, message: '请输入密码', trigger: 'blur'}],
                 gender: [
                     {required: true, message: '请选择性别', trigger: 'blur'},
                 ],
@@ -310,10 +296,75 @@ export default {
         handleSizeChange(val) {
             console.log(`每页 ${val} 条`);
         },
-        handleCurrentChange(val) {
+        async handleCurrentChange(val) {
             this.currentPage = val;
             this.offset = (val - 1) * this.limit;
-            this.getUsers()
+            await this.getUsers()
+        },
+        handleAdd() {
+            this.newTable = {
+                userName: "",
+                jobId: "",
+                gender: "",
+                phone: "",
+                email: "",
+            };
+            this.$refs.newUserForm = this.newTable;
+            this.addDialogFormVisible = true;
+        },
+        async handleEdit(row) {
+            this.selectTable = await this.userInfo(row.userId);
+            console.log(this.selectTable)
+            this.dialogFormVisible = true;
+        },
+        async handleDelete(row) {
+            this.$confirm("确定要删除改用户？", "提示", {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                showCancelButton: true,
+                showClose: false,
+                closeOnClickModal: false
+            }).then(async () => {
+                const res = await postMethod('/core/user/delete', JSON.stringify({id: row.userId}))
+                    if (res.data.code === 200) {
+                        this.$message({
+                            type: 'success',
+                            message: '删除用户成功'
+                        });
+
+                        await this.getUsers();
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: res.data.msg
+                        });
+                    }
+            }).catch(() => {
+            });
+        },
+        addUser() {
+            this.$refs.addUserForm.validate(async valid => {
+                if (valid) {
+                    const res = await postMethod('/core/user/upsert', this.newTable);
+                    if (res.data.code === 200) {
+                        this.$message({
+                            type: 'success',
+                            message: '添加成功',
+                        });
+
+                        this.addDialogFormVisible = false;
+
+                        await this.getUsers();
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: res.data.msg,
+                        });
+                    }
+                }
+            });
+
         },
         async getUsers() {
             const res = await getUserList({
@@ -322,8 +373,6 @@ export default {
                     "pageSize": this.limit,
                 }
             });
-
-            console.log(res.data.data)
 
             if (res.data.code === 200) {
                 this.tableData = res.data.data.userList;
@@ -335,113 +384,48 @@ export default {
                 });
             }
         },
-        handleEdit(row) {
-            this.selectTable = row;
-            this.dialogFormVisible = true;
-        },
-        handleDelete(index, row) {
-            try{
-                // const res = await deleteFood(row.item_id);
-                demoUserData.splice(this.offset + index, 1);
-                if (1) {
-                    this.$message({
-                        type: 'success',
-                        message: '删除用户成功'
-                    });
-                    // this.tableData.splice(index, 1);
-                    this.tableData = demoUserData.slice(this.offset, this.offset + this.limit);
-                    this.count = demoUserData.length;
-                } else {
-                    throw new Error(res.message)
+        async userInfo(userId) {
+            const res = await getUserInfo(JSON.stringify({id: userId}));
+            if (res.data.code === 200) {
+                switch (res.data.data.gender) {
+                    case "男": res.data.data.gender = "1"; break;
+                    case "女": res.data.data.gender = "2"; break;
+                    default: res.data.data.gender = "0";
                 }
-            } catch (err) {
+                return res.data.data;
+            } else {
                 this.$message({
                     type: 'error',
-                    message: err.message
+                    message: res.data.msg,
                 });
-                console.log('删除用户失败')
             }
         },
-        updateUser() {
-            this.dialogFormVisible = false;
+        async updateUser() {
             try {
-                // const subData = {new_category_id: this.selectMenu.value, specs: this.specs};
-                // const postData = {...this.selectTable, ...subData};
-                // const res = await updateFood(postData)
-                if (1) {
-                    this.$message({
-                        type: 'success',
-                        message: '更新用户信息成功'
-                    });
-                    // this.getFoods();
-                } else {
-                    this.$message({
-                        type: 'error',
-                        message: res.message
-                    });
-                }
-            }catch(err){
+                this.$refs.updateUserForm.validate(async valid => {
+                    if (valid) {
+                        const res = await postMethod('/core/user/upsert', this.selectTable);
+                        if (res.data.code === 200) {
+                            this.$message({
+                                type: 'success',
+                                message: '更新成功',
+                            });
+
+                            this.dialogFormVisible = false;
+
+                            await this.getUsers();
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                message: res.data.msg,
+                            });
+                        }
+                    }
+                });
+            } catch(err) {
                 console.log('更新用户信息失败', err);
             }
         },
-        handleAdd() {
-            this.newTable = {
-                "name": "",
-                "registeDate": "",
-                "registeLocation": "",
-                "loginId": "",
-                "password": "",
-            };
-            this.addDialogFormVisible = true;
-        },
-        addUser() {
-            if (this.newTable.name === "") {
-                this.$message({
-                    type: 'error',
-                    message: '用户姓名不能为空'
-                });
-                return;
-            }
-            if (this.newTable.registeDate === "") {
-                this.$message({
-                    type: 'error',
-                    message: '注册日期不能为空'
-                });
-                return;
-            }
-            if (this.newTable.registeLocation === "") {
-                this.$message({
-                    type: 'error',
-                    message: '注册地点不能为空'
-                });
-                return;
-            }
-            if (this.newTable.loginId === "") {
-                this.$message({
-                    type: 'error',
-                    message: '账号不能为空'
-                });
-                return;
-            }
-            if (this.newTable.password === "") {
-                this.$message({
-                    type: 'error',
-                    message: '密码不能为空'
-                });
-                return;
-            }
-
-            this.addDialogFormVisible = false;
-            demoUserData.splice(0, 0, this.newTable);
-            this.count = demoUserData.length;
-            this.currentPage = 1;
-            this.tableData = demoUserData.slice(0, this.limit);
-
-            this.$message({
-                type: 'success',
-                message: '添加成功'
-            });
-        }
     },
 }
 </script>
