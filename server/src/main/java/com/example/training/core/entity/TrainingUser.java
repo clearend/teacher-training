@@ -45,6 +45,9 @@ public class TrainingUser implements Serializable {
     @Schema(description = "创建者id")
     private String createUserId;
 
+    @Schema(description = "学习时长")
+    private String learnTime;
+
     @Schema(description = "是否删除")
     @TableLogic
     private Integer isDel;

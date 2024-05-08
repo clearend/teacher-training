@@ -10,6 +10,7 @@ import lombok.Getter;
 public enum TrainingUserStatusEnum {
 
     WAITING(100, "待完成"),
+    AUDITING(150, "审核中"),
     FINISHED(200, "已完成"),
     UNFINISHED(300, "未完成");
 

@@ -44,18 +44,28 @@
             </div>
 
             <el-dialog title="培训完成上报" v-model="dialogFormVisible">
-                <el-form :model="selectTable">
-                    <el-form-item label="培训主题" label-width="100px">
-                        <el-input v-model="selectTable.name" auto-complete="off" :disabled="true"></el-input>
+                <el-form :model="selectTable" ref="reportForm" :rules="rules">
+                    <el-form-item label="培训标题" label-width="100px">
+                        <el-input v-model="selectTable.trainingName" auto-complete="off" :disabled="true"></el-input>
                     </el-form-item>
                     <el-form-item label="培训地点" label-width="100px">
-                        <el-input v-model="selectTable.location" :disabled="true"></el-input>
+                        <el-input v-model="selectTable.trainingAddress" :disabled="true"></el-input>
                     </el-form-item>
-                    <el-form-item label="培训描述" label-width="100px">
-                        <el-input v-model="selectTable.description" :disabled="true"></el-input>
+                    <el-form-item label="培训时间" label-width="100px">
+                        <el-input v-model="selectTable.trainingTime" :disabled="true"></el-input>
                     </el-form-item>
-                    <el-form-item label="培训心得" label-width="100px">
-                        <el-input v-model="selectTable.finishTalk" type="textarea"></el-input>
+                    <el-form-item label="培训心得" label-width="100px" prop="reportContent">
+                        <el-input v-model="selectTable.reportContent" type="textarea"></el-input>
+                    </el-form-item>
+                    <el-form-item label="素材文件" label-width="100px" prop="fileId">
+                        <el-upload
+                                class="upload-demo"
+                                action="http://localhost:8901/core/sysFile/upload"
+                                :on-success="handleFileUploadSuccess"
+                                :on-remove="handleFileRemove">
+                            <el-button size="small" type="primary">点击上传</el-button>
+                            <div slot="tip" class="el-upload__tip">文件大小不超过100MB</div>
+                        </el-upload>
                     </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
@@ -85,8 +95,6 @@
 </template>
 
 <script>
-    import ca from "element-ui/lib/locale/lang/ca";
-
     const demoLearnData = [
         {
             "name": "创新教育理念研讨会",
@@ -220,7 +228,6 @@
     import headTop from '../components/headTop'
     import {baseUrl, baseImgPath} from '@/config/env'
     import {postMethod} from "@/api/getDataLocal";
-    import {cityGuess, getResturants, getResturantsCount, foodCategory, updateResturant, searchplace, deleteResturant} from '@/api/getData'
     export default {
         data() {
             return {
@@ -240,6 +247,9 @@
                 addDialogFormVisible: false,
                 newTable: {},
                 finishFormVisible: false,
+                rules: {
+                    reportContent: [{required: true, message: "请输入学习心得", trigger: 'blur'}]
+                }
             }
         },
         created() {
@@ -269,7 +279,7 @@
                              case "待完成": item.status = "100"; break;
                              case "已完成": item.status = "200"; break;
                              case "未完成": item.status = "300"; break;
-                             case "已提交": item.status = "150"; break;
+                             case "审核中": item.status = "150"; break;
                              default: item.status = "0";
                          }
                     })
@@ -359,19 +369,32 @@
                 this.dialogFormVisible = true;
             },
             report() {
-                this.dialogFormVisible = false;
-                if (this.selectTable.finishTalk === "") {
-                    this.$message({
-                        type: 'error',
-                        message: '请填写学习心得'
-                    });
-                    return;
-                }
-                this.selectTable.status = "已完成";
-                this.$message({
-                    type: 'success',
-                    message: '上报成功'
-                });
+                this.$refs.reportForm.validate(async valid => {
+                    if (valid) {
+                        const res = await postMethod('/core/trainingAudit/uploadLearnRecord', JSON.stringify(
+                            {
+                                trainingId: this.selectTable.trainingId,
+                                content: this.selectTable.reportContent,
+                                fileId: this.selectTable.fileId,
+                            }
+                        ));
+
+                        if (res.data.code === 200) {
+                            this.$message({
+                                type: 'success',
+                                message: '上报成功'
+                            });
+
+                            await this.getTrainingList();
+                            this.dialogFormVisible = false;
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                message: res.data.msg,
+                            });
+                        }
+                    }
+                })
             },
             handleDelete(index, row) {
                 try{
@@ -455,6 +478,14 @@
                     type: 'success',
                     message: '添加成功'
                 });
+            },
+            handleFileUploadSuccess(response, file, fileList) {
+                if (response.data.code === 200) {
+                    this.selectTable.fileId = response.data.data.fileId;
+                }
+            },
+            handleFileRemove(file, fileList) {
+                this.selectTable.fileId = "";
             }
         },
     }

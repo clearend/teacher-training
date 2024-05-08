@@ -2,6 +2,7 @@ package com.example.training.core.service;
 
 import com.example.training.core.entity.TrainingAudit;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.training.core.entity.User;
 import com.example.training.core.entity.request.ExamineRequest;
 import com.example.training.core.entity.request.UploadLearnRecordRequest;
 
@@ -17,5 +18,5 @@ public interface ITrainingAuditService extends IService<TrainingAudit> {
 
     void examineTraining(ExamineRequest createTrainingRequest);
 
-    void uploadLearnRecord(UploadLearnRecordRequest request);
+    void uploadLearnRecord(UploadLearnRecordRequest request, User user);
 }

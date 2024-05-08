@@ -3,6 +3,7 @@ package com.example.training.core.controller;
 import com.example.training.common.ResultResponse;
 import com.example.training.common.annotations.PermissionAccess;
 import com.example.training.common.exceptions.BizException;
+import com.example.training.core.entity.User;
 import com.example.training.core.entity.request.CreateTrainingRequest;
 import com.example.training.core.entity.request.ExamineRequest;
 import com.example.training.core.entity.request.UploadLearnRecordRequest;
@@ -10,6 +11,7 @@ import com.example.training.core.entity.vo.SysFileVO;
 import com.example.training.core.service.ITrainingAuditService;
 import com.example.training.core.service.ITrainingService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
@@ -25,6 +27,9 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/core/trainingAudit")
+@CrossOrigin
+@ControllerAdvice
+@Tag(name = "培训审批控制器")
 public class TrainingAuditController {
     @Resource
     private ITrainingAuditService iTrainingAuditService;
@@ -40,8 +45,11 @@ public class TrainingAuditController {
     @PermissionAccess
     @PostMapping("/uploadLearnRecord")
     @Operation(summary = "上报学习记录")
-    public ResultResponse<String> uploadLearnRecord(@RequestBody UploadLearnRecordRequest request) {
-        iTrainingAuditService.uploadLearnRecord(request);
+    public ResultResponse<String> uploadLearnRecord(
+            @RequestBody UploadLearnRecordRequest request,
+            @RequestAttribute("user") User user
+    ) {
+        iTrainingAuditService.uploadLearnRecord(request, user);
         return ResultResponse.success("success");
     }
 }
