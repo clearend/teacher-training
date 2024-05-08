@@ -3,7 +3,7 @@
 <mapper namespace="com.example.training.core.mapper.TrainingAuditMapper">
  <select id="examineTraining" >
      update training_audit set audit_status=#{auditStatus},audit_time=now(),audit_remark=#{auditRemark}
-                             ,is_del=#{isDel},update_time=now() where training_audit_id=trainingAuditId
+                             ,is_del=#{isDel},update_time=now() where training_audit_id=#{trainingAuditId}
 
  </select>
 </mapper>

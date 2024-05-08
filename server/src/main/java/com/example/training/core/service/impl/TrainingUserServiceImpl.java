@@ -26,11 +26,17 @@ public class TrainingUserServiceImpl extends ServiceImpl<TrainingUserMapper, Tra
     @Resource
     private TrainingUserMapper trainingUserMapper;
     @Override
-    public void addPerson(AddPersonRequest createTrainingRequest) {
+    public void addPerson(AddPersonRequest createTrainingRequest,User user1) {
         List<User> userList = createTrainingRequest.getUserList();
         if(userList!=null && userList.size()>0){
             for(User user:userList){
-                trainingUserMapper.addPerson(createTrainingRequest.getTrainingId(),user);
+                //查看是否已经报过名
+                String flag=trainingUserMapper.getTrainingUserById(createTrainingRequest.getTrainingId(),user.getUserId());
+                if("1".equals(flag)){
+                     continue;
+                }else{
+                    trainingUserMapper.addPerson(createTrainingRequest.getTrainingId(),user,user1.getUserId());
+                }
             }
         }
     }
@@ -41,10 +47,16 @@ public class TrainingUserServiceImpl extends ServiceImpl<TrainingUserMapper, Tra
      * @param user
      */
     @Override
-    public void signUp(AddPersonRequest addPersonRequest, String user) {
+    public void signUp(AddPersonRequest addPersonRequest, User user) {
         User user1 = new User();
-        user1.setUserId(user);
-        trainingUserMapper.addPerson(addPersonRequest.getTrainingId(),user1);
+        user1.setUserId(user.getUserId());
+        //查看是否已经报过名
+        String flag=trainingUserMapper.getTrainingUserById(addPersonRequest.getTrainingId(),user1.getUserId());
+        if("1".equals(flag)){
+          //如果已经被逻辑删或者已经报名
+        }else{
+            trainingUserMapper.addPerson(addPersonRequest.getTrainingId(),user1,user.getUserId());
+        }
     }
 
     /**
@@ -53,9 +65,22 @@ public class TrainingUserServiceImpl extends ServiceImpl<TrainingUserMapper, Tra
      * @param user
      */
     @Override
-    public void cancelSignUp(AddPersonRequest addPersonRequest, String user) {
-        trainingUserMapper.cancelSignUp(addPersonRequest.getTrainingId(),user);
+    public void cancelSignUp(AddPersonRequest addPersonRequest, User user) {
+        trainingUserMapper.cancelSignUp(addPersonRequest.getTrainingId(),user.getUserId());
     }
 
-
+    /**
+     * 删除培训用户
+     * @param addPersonRequest
+     * @param user
+     */
+    @Override
+    public void deletePerson(AddPersonRequest addPersonRequest, User user) {
+        List<User> userList = addPersonRequest.getUserList();
+        if(userList!=null && userList.size()>0){
+            for(User user1:userList){
+                trainingUserMapper.cancelSignUp(addPersonRequest.getTrainingId(),user1.getUserId());
+            }
+        }
+    }
 }

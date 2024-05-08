@@ -2,6 +2,7 @@ package com.example.training.core.service;
 
 import com.example.training.core.entity.TrainingUser;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.training.core.entity.User;
 import com.example.training.core.entity.request.AddPersonRequest;
 import com.example.training.core.entity.request.CreateTrainingRequest;
 
@@ -17,9 +18,11 @@ import java.util.List;
  */
 public interface ITrainingUserService extends IService<TrainingUser> {
 
-    void addPerson(AddPersonRequest addPersonRequests);
+    void addPerson(AddPersonRequest addPersonRequests,User user);
 
-    void signUp(AddPersonRequest addPersonRequest, String user);
+    void signUp(AddPersonRequest addPersonRequest, User user);
 
-    void cancelSignUp(AddPersonRequest addPersonRequest, String user);
+    void cancelSignUp(AddPersonRequest addPersonRequest, User user);
+
+    void deletePerson(AddPersonRequest addPersonRequest, User user);
 }

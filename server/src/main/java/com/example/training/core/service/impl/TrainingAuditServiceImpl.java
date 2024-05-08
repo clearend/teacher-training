@@ -23,6 +23,6 @@ public class TrainingAuditServiceImpl extends ServiceImpl<TrainingAuditMapper, T
     private TrainingAuditMapper trainingAuditMapper;
     @Override
     public void examineTraining(ExamineRequest createTrainingRequest) {
-        trainingAuditMapper.examineTraining();
+        trainingAuditMapper.examineTraining(createTrainingRequest);
     }
 }

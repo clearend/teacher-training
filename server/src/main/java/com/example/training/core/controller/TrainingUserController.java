@@ -2,6 +2,7 @@ package com.example.training.core.controller;
 
 import com.example.training.common.ResultResponse;
 import com.example.training.common.annotations.PermissionAccess;
+import com.example.training.core.entity.User;
 import com.example.training.core.entity.request.AddPersonRequest;
 import com.example.training.core.entity.request.CreateTrainingRequest;
 import com.example.training.core.service.ITrainingService;
@@ -30,16 +31,24 @@ public class TrainingUserController {
 
     @PermissionAccess
     @PostMapping("/addPerson")
-    @Operation(summary = "加入学员")
-    public ResultResponse addPerson(@RequestBody AddPersonRequest addPersonRequest,@RequestAttribute("user") String user) {
-        iTrainingUserService.addPerson(addPersonRequest);
+    @Operation(summary = "加入培训用户")
+    public ResultResponse addPerson(@RequestBody AddPersonRequest addPersonRequest,@RequestAttribute("user") User user) {
+        iTrainingUserService.addPerson(addPersonRequest,user);
+        return ResultResponse.success("success");
+    }
+
+    @PostMapping("/deletePerson")
+    @PermissionAccess
+    @Operation(summary = "删除培训用户")
+    public ResultResponse deletePerson(@RequestBody AddPersonRequest addPersonRequest,@RequestAttribute("user") User user) {
+        iTrainingUserService.deletePerson(addPersonRequest,user);
         return ResultResponse.success("success");
     }
 
     @PostMapping("/signUp")
     @PermissionAccess
     @Operation(summary = "报名培训")
-    public ResultResponse signUp(@RequestBody AddPersonRequest addPersonRequest,@RequestAttribute("user") String user) {
+    public ResultResponse signUp(@RequestBody AddPersonRequest addPersonRequest,@RequestAttribute("user") User user) {
         iTrainingUserService.signUp(addPersonRequest,user);
         return ResultResponse.success("success");
     }
@@ -47,8 +56,10 @@ public class TrainingUserController {
     @PostMapping("/cancelSignUp")
     @PermissionAccess
     @Operation(summary = "取消报名培训")
-    public ResultResponse cancelSignUp(@RequestBody AddPersonRequest addPersonRequest,@RequestAttribute("user") String user) {
+    public ResultResponse cancelSignUp(@RequestBody AddPersonRequest addPersonRequest,@RequestAttribute("user") User user) {
         iTrainingUserService.cancelSignUp(addPersonRequest,user);
         return ResultResponse.success("success");
     }
+
+
 }
