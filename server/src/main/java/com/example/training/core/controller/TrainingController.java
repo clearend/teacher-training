@@ -2,11 +2,9 @@ package com.example.training.core.controller;
 
 import com.example.training.common.ResultResponse;
 import com.example.training.common.annotations.PermissionAccess;
-import com.example.training.core.entity.request.CreateTrainingRequest;
-import com.example.training.core.entity.request.SingleIdRequest;
-import com.example.training.core.entity.request.TrainingListRequest;
-import com.example.training.core.entity.request.UserListRequest;
+import com.example.training.core.entity.request.*;
 import com.example.training.core.entity.vo.FindTrainListVO;
+import com.example.training.core.entity.vo.TrainingInfoVO;
 import com.example.training.core.entity.vo.UserListItemVO;
 import com.example.training.core.service.ITrainingService;
 import com.example.training.core.service.IUserService;
@@ -53,11 +51,25 @@ public class TrainingController {
     }
 
     @PermissionAccess
+    @PostMapping("/notInUserList")
+    @Operation(summary = "查看未参加培训人员列表")
+    public ResultResponse<List<UserListItemVO>> findNotInUserList(@RequestBody SingleIdRequest singleIdRequest) {
+        return ResultResponse.success(iTrainingService.findNotInUserList(singleIdRequest));
+    }
+
+    @PermissionAccess
     @PostMapping("/delete")
     @Operation(summary = "删除培训")
     public ResultResponse<String> deleteTraining(@RequestBody SingleIdRequest singleIdRequest) {
         iTrainingService.deleteTraining(singleIdRequest);
         return ResultResponse.success();
+    }
+
+    @PermissionAccess
+    @PostMapping("/info")
+    @Operation(summary = "查看培训详情")
+    public ResultResponse<TrainingInfoVO> findTrainingInfo(@RequestBody SingleIdRequest singleIdRequest) {
+        return ResultResponse.success(iTrainingService.findTrainingInfo(singleIdRequest));
     }
 
 }
