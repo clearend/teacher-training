@@ -1,6 +1,6 @@
 package com.example.training.core.entity.request;
 
-import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.example.training.core.entity.enums.TrainTypeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -12,6 +12,7 @@ public class CreateTrainingRequest {
 
     @Schema(description = "培训id")
     private String trainingId;
+
     @Schema(description = "培训名称")
     private String trainingName;
 
@@ -19,7 +20,7 @@ public class CreateTrainingRequest {
     private Integer trainingType;
 
     @Schema(description = "培训时间")
-    private LocalDateTime trainingTime;
+    private Long trainingTime;
 
     @Schema(description = "培训地址")
     private String trainingAddress;
@@ -27,16 +28,4 @@ public class CreateTrainingRequest {
     @Schema(description = "培训内容")
     private String trainingContent;
 
-    @Schema(description = "是否删除")
-    @TableLogic
-    private Integer isDel;
-
-    @Schema(description = "创建时间")
-    private LocalDateTime createTime;
-
-    @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
-
-    @Schema(description = "用户id")
-    private LocalDateTime userId;
 }

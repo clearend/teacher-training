@@ -9,6 +9,7 @@ import com.example.training.core.entity.vo.UserListItemVO;
 import com.example.training.core.service.ITrainingService;
 import com.example.training.core.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
@@ -25,12 +26,16 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/core/training")
+@ControllerAdvice
+@CrossOrigin
+@Tag(name = "培训控制器")
 public class TrainingController {
+
     @Resource
     private ITrainingService iTrainingService;
 
     @PermissionAccess
-    @PostMapping("/createTraining")
+    @PostMapping("/create")
     @Operation(summary = "新建培训")
     public ResultResponse<String> createTraining(@RequestBody CreateTrainingRequest createTrainingRequest) {
         iTrainingService.createTraining(createTrainingRequest);

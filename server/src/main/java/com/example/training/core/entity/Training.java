@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.example.training.core.entity.enums.TrainTypeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,10 +38,10 @@ public class Training implements Serializable {
     private String trainingName;
 
     @Schema(description = "培训类型")
-    private Integer trainingType;
+    private TrainTypeEnum trainingType;
 
     @Schema(description = "培训时间")
-    private LocalDateTime trainingTime;
+    private Date trainingTime;
 
     @Schema(description = "培训地址")
     private String trainingAddress;
@@ -52,10 +54,10 @@ public class Training implements Serializable {
     private Integer isDel;
 
     @Schema(description = "创建时间")
-    private LocalDateTime createTime;
+    private Date createTime;
 
     @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
+    private Date updateTime;
 
     @Override
     public String toString() {

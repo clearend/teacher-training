@@ -11,15 +11,25 @@
         </div>
 
         <el-dialog title="新增培训信息" v-model="addDialogFormVisible">
-            <el-form :model="newTable">
-                <el-form-item label="培训主题" label-width="100px">
-                    <el-input v-model="newTable.name" auto-complete="off"></el-input>
+            <el-form :model="newTable" ref="newTrainForm" :rules="rules">
+                <el-form-item label="培训名称" label-width="100px" prop="trainingName">
+                    <el-input v-model="newTable.trainingName" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="培训地点" label-width="100px">
-                    <el-input v-model="newTable.location"></el-input>
+                <el-form-item label="培训地址" label-width="100px" prop="trainingAddress">
+                    <el-input v-model="newTable.trainingAddress"></el-input>
                 </el-form-item>
-                <el-form-item label="培训描述" label-width="100px">
-                    <el-input v-model="newTable.description"></el-input>
+                <el-form-item label="培训时间" label-width="100px" prop="trainingTime">
+                    <el-date-picker v-model="newTable.trainingTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="培训类型" label-width="100px" prop="traitrainingType">
+                    <el-select v-model="newTable.trainingType" placeholder="请选择培训类型">
+                        <el-option label="校级" value="100"></el-option>
+                        <el-option label="省市级" value="200"></el-option>
+                        <el-option label="国家级" value="300"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="培训内容" label-width="100px" prop="trainingContent">
+                    <el-input type="textarea" v-model="newTable.trainingContent"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -284,8 +294,8 @@
 
 
     import headTop from '../components/headTop'
+    import {postMethod} from "@/api/getDataLocal";
     import {baseUrl, baseImgPath} from '@/config/env'
-    import {cityGuess, getResturants, getResturantsCount, foodCategory, updateResturant, searchplace, deleteResturant} from '@/api/getData'
     export default {
         data(){
             return {
@@ -307,7 +317,14 @@
                 specsFormVisible: false,
                 addItemList: {},
                 teacherList: [],
-                selectedTeachers: []
+                selectedTeachers: [],
+                rules: {
+                    trainingName: [{required: true, message: '请输入培训名称', trigger: 'blur'}],
+                    trainingAddress: [{required: true, message: '请输入培训地址', trigger: 'blur'}],
+                    trainingTime: { type: 'date', required: true, message: '请选择日期', trigger: 'change' },
+                    trainingType: [{required: true, message: '请选择培训类型', trigger: 'blur'}],
+                    trainingContent: [{required: true, message: '请填写培训内容', trigger: 'blur'}],
+                }
             }
         },
         created(){
@@ -381,45 +398,54 @@
             },
             handleAdd() {
                 this.newTable = {
-                    "name": "",
-                    "location": "",
-                    "description": "",
+                    trainingName: "",
+                    trainingAddress: "",
+                    trainingContent: "",
+                    trainingTime: "",
+                    trainingType: "",
                 };
                 this.addDialogFormVisible = true;
             },
             addLearn() {
-                if (this.newTable.name === "") {
-                    this.$message({
-                        type: 'error',
-                        message: '培训主题不能为空'
-                    });
-                    return;
-                }
-                if (this.newTable.location === "") {
-                    this.$message({
-                        type: 'error',
-                        message: '培训地点不能为空'
-                    });
-                    return;
-                }
-                if (this.newTable.description === "") {
-                    this.$message({
-                        type: 'error',
-                        message: '培训描述不能为空'
-                    });
-                    return;
-                }
+                this.$refs.newTrainForm.validate(async valid => {
+                    if (valid) {
+                        const newTrain = this.newTable;
+                        newTrain.trainingTime = newTrain.trainingTime.valueOf();
+                        newTrain.trainingType = Number(newTrain.trainingType)
+                        console.log(newTrain);
+                        const res = await postMethod('/core/training/create', JSON.stringify(newTrain));
 
-                this.addDialogFormVisible = false;
-                demoLearnData.splice(0, 0, this.newTable);
-                this.count = demoLearnData.length;
-                this.currentPage = 1;
-                this.tableData = demoLearnData.slice(0, this.limit);
+                        if (res.data.code === 200) {
+                            this.$message({
+                                type: 'success',
+                                message: '添加成功',
+                            });
 
-                this.$message({
-                    type: 'success',
-                    message: '添加成功'
-                });
+                            this.addDialogFormVisible = false;
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                message: res.data.msg,
+                            });
+                        }
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: '请填写完整信息'
+                        });
+                    }
+                })
+
+                // this.addDialogFormVisible = false;
+                // demoLearnData.splice(0, 0, this.newTable);
+                // this.count = demoLearnData.length;
+                // this.currentPage = 1;
+                // this.tableData = demoLearnData.slice(0, this.limit);
+                //
+                // this.$message({
+                //     type: 'success',
+                //     message: '添加成功'
+                // });
             },
             tableRowClassName(row, index) {
                 if (index === 1) {
