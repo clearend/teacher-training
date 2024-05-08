@@ -9,9 +9,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum TrainingUserStatusEnum {
 
-    SCHOOL(100, "待完成"),
-    PROVINCE(200, "已完成"),
-    NATIONAL(300, "未完成");
+    WAITING(100, "待完成"),
+    FINISHED(200, "已完成"),
+    UNFINISHED(300, "未完成");
 
     @EnumValue
     private final Integer code;
