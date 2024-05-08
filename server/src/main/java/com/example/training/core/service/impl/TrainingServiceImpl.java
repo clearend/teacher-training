@@ -1,10 +1,14 @@
 package com.example.training.core.service.impl;
 
 import cn.hutool.core.util.IdUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.training.core.entity.Training;
+import com.example.training.core.entity.dto.TrainingListDTO;
 import com.example.training.core.entity.enums.TrainTypeEnum;
 import com.example.training.core.entity.request.CreateTrainingRequest;
+import com.example.training.core.entity.request.TrainingListRequest;
 import com.example.training.core.entity.vo.FindTrainListVO;
+import com.example.training.core.entity.vo.TrainingListItemVO;
 import com.example.training.core.mapper.TrainingMapper;
 import com.example.training.core.mapper.UserMapper;
 import com.example.training.core.service.ITrainingService;
@@ -38,7 +42,7 @@ public class TrainingServiceImpl extends ServiceImpl<TrainingMapper, Training> i
     public void createTraining(CreateTrainingRequest createTrainingRequest) {
         Training training = new Training();
         BeanUtils.copyProperties(createTrainingRequest, training);
-        training.setTrainingId(IdUtil.fastSimpleUUID());
+        training.setTrainingId("t-" + IdUtil.fastSimpleUUID());
         training.setTrainingTime(new Date(createTrainingRequest.getTrainingTime()));
         training.setTrainingType(TrainTypeEnum.getByCode(createTrainingRequest.getTrainingType()));
         trainingMapper.insert(training);
@@ -48,25 +52,38 @@ public class TrainingServiceImpl extends ServiceImpl<TrainingMapper, Training> i
 //        trainingMapper.createTraining(createTrainingRequest);
     }
 
-    /**
-     * 查询培训列表
-     * @param createTrainingRequest
-     * @return
-     */
     @Override
-    public List<FindTrainListVO> findTrainList(CreateTrainingRequest createTrainingRequest) {
-        List<FindTrainListVO> list = new ArrayList<>();
-        list=trainingMapper.findTrainList(createTrainingRequest);
-        if(list!=null && list.size()>0){
-            for(FindTrainListVO vo:list){
-                //查询完成率
-              Float comp= trainingMapper.getComp(vo);
-              if(comp!=null){
-                  String formattedComp = String.format("%.2f", comp)+"%";
-                  vo.setComp(formattedComp);
-              }
-            }
+    public FindTrainListVO findTrainList(TrainingListRequest trainingListRequest) {
+        Integer currentPage = trainingListRequest.getPageRequest().getCurrentPage();
+        Integer pageSize = trainingListRequest.getPageRequest().getPageSize();
+        Integer offset = (currentPage - 1) * pageSize;
+
+        LambdaQueryWrapper<Training> countWrapper = new LambdaQueryWrapper<>();
+        Long count = trainingMapper.selectCount(countWrapper);
+
+        TrainingListDTO trainingListDTO = new TrainingListDTO();
+        trainingListDTO.setOffset(offset);
+        trainingListDTO.setLimit(pageSize);
+
+        FindTrainListVO findTrainListVO = new FindTrainListVO();
+        List<TrainingListItemVO> trainingListItemVOList = trainingMapper.findTrainList(trainingListDTO);
+        findTrainListVO.setCount(count);
+        if (trainingListItemVOList == null || trainingListItemVOList.isEmpty()) {
+            findTrainListVO.setTrainingList(new ArrayList<>());
+        } else {
+            findTrainListVO.setTrainingList(trainingListItemVOList);
         }
-        return list;
+
+//        if(list!=null && list.size()>0){
+//            for(FindTrainListVO vo:list){
+//                //查询完成率
+//              Float comp= trainingMapper.getComp(vo);
+//              if(comp!=null){
+//                  String formattedComp = String.format("%.2f", comp)+"%";
+//                  vo.setComp(formattedComp);
+//              }
+//            }
+//        }
+        return findTrainListVO;
     }
 }

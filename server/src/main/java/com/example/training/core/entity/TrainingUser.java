@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
+
+import com.example.training.core.entity.enums.TrainingUserStatusEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,15 +39,21 @@ public class TrainingUser implements Serializable {
     @Schema(description = "用户id")
     private String userId;
 
+    @Schema(description = "完成状态")
+    private TrainingUserStatusEnum status;
+
+    @Schema(description = "创建者id")
+    private String createUserId;
+
     @Schema(description = "是否删除")
     @TableLogic
     private Integer isDel;
 
     @Schema(description = "创建时间")
-    private LocalDateTime createTime;
+    private Date createTime;
 
     @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
+    private Date updateTime;
 
     @Override
     public String toString() {

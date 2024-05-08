@@ -1,10 +1,8 @@
 package com.example.training.core.entity.request;
 
-import com.example.training.core.entity.enums.TrainTypeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 
 @Data
 @Schema(description = "新建培训请求参数")

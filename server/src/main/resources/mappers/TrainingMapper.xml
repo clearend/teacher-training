@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.training.core.mapper.TrainingMapper">
+    <resultMap id="TrainingListItem" type="com.example.training.core.entity.vo.TrainingListItemVO">
+        <id column="id" property="id"/>
+        <result column="training_id" property="trainingId"/>
+        <result column="training_name" property="trainingName"/>
+        <result column="training_type" property="trainingType"/>
+        <result column="training_time" property="trainingTime" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result column="training_address" property="trainingAddress"/>
+        <result column="training_content" property="trainingContent"/>
+        <result column="training_progress" property="trainingProgress"/>
+    </resultMap>
+
     <insert id="createTraining">
         insert into training(training_id, training_name, training_type, training_time, training_address,
                              training_content,create_time, update_time, is_del)
@@ -8,12 +19,15 @@
                 #{trainingContent}, NOW(), NOW(), #{isDel})
     </insert>
 
-    <select id="findTrainList" resultType="com.example.training.core.entity.vo.FindTrainListVO">
-        select
-        from training
-        where is_del !='1'
-        <if test='trainingId!=null and trainingId!=""'>
-            and training.training_id=#{trainingId}
+    <select id="findTrainList" resultMap="TrainingListItem">
+        select t1.training_id, t1.training_name, t1.training_type, t1.training_time, t1.training_address, t1.training_content,
+            IF(COUNT(t2.status) = 0, 0, SUM(IF((t2.status = 200), 1, 0)) / COUNT(t2.status) * 100) AS training_progress
+        from training t1
+        left join training_user t2 on t1.training_id = t2.training_id
+        where t1.is_del = '0' and (t2.is_del = '0' or t2.is_del is null)
+        group by t1.training_id
+        <if test="param != null and param.offset != null">
+            limit #{param.limit} offset #{param.offset}
         </if>
     </select>
 

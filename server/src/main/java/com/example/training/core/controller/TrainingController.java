@@ -3,6 +3,7 @@ package com.example.training.core.controller;
 import com.example.training.common.ResultResponse;
 import com.example.training.common.annotations.PermissionAccess;
 import com.example.training.core.entity.request.CreateTrainingRequest;
+import com.example.training.core.entity.request.TrainingListRequest;
 import com.example.training.core.entity.request.UserListRequest;
 import com.example.training.core.entity.vo.FindTrainListVO;
 import com.example.training.core.entity.vo.UserListItemVO;
@@ -45,11 +46,9 @@ public class TrainingController {
     @PermissionAccess
     @PostMapping("/findTrainList")
     @Operation(summary = "查看培训列表")
-    public ResultResponse<List<FindTrainListVO>> findTrainList(@RequestBody CreateTrainingRequest createTrainingRequest) {
+    public ResultResponse<FindTrainListVO> findTrainList(@RequestBody TrainingListRequest trainingListRequest) {
         //入参 培训id
-        return ResultResponse.success(iTrainingService.findTrainList(createTrainingRequest));
+        return ResultResponse.success(iTrainingService.findTrainList(trainingListRequest));
     }
-
-
 
 }

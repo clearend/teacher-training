@@ -38,15 +38,17 @@
             </div>
         </el-dialog>
 
-        <div class="table_container"  style="padding-top: 10px;">
+        <div class="table_container" style="padding-top: 10px;">
             <el-table
                 :data="tableData"
                 highlight-current-row
                 style="width: 100%">
                 <el-table-column type="index" width="100"></el-table-column>
-                <el-table-column label="培训主题" property="name"></el-table-column>
-                <el-table-column label="培训地点" property="location"></el-table-column>
-                <el-table-column label="培训描述" property="description"></el-table-column>
+                <el-table-column label="培训名称" property="trainingName"></el-table-column>
+                <el-table-column label="培训地点" property="trainingAddress"></el-table-column>
+                <el-table-column label="培训时间" property="trainingTime"></el-table-column>
+                <el-table-column label="培训类型" property="trainingType"></el-table-column>
+                <el-table-column label="完成进度" property="trainingProgress"></el-table-column>
                 <el-table-column label="操作" width="300">
                     <template slot-scope="scope">
                         <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
@@ -297,7 +299,7 @@
     import {postMethod} from "@/api/getDataLocal";
     import {baseUrl, baseImgPath} from '@/config/env'
     export default {
-        data(){
+        data() {
             return {
                 baseUrl,
                 baseImgPath,
@@ -327,16 +329,37 @@
                 }
             }
         },
-        created(){
+        created() {
             this.initData();
         },
         components: {
             headTop,
         },
         methods: {
-            initData(){
-                this.getLearns();
-                this.count = demoLearnData.length;
+            async initData() {
+                await this.getTrainingList();
+            },
+            async getTrainingList() {
+                const res = await postMethod('/core/training/findTrainList',  JSON.stringify({
+                    pageRequest: {
+                        currentPage: this.currentPage,
+                        pageSize: this.limit,
+                    },
+                }));
+
+                if (res.data.code === 200) {
+                    console.log(res.data.data);
+                    this.count = res.data.data.count;
+                    this.tableData = res.data.data.trainingList;
+                    this.tableData.forEach(item => {
+                        item.trainingProgress = item.trainingProgress + "%";
+                    })
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.data.msg
+                    });
+                }
             },
             async getLearns(){
                 this.tableData = demoLearnData.slice(this.offset, this.offset + this.limit);
@@ -346,8 +369,8 @@
             },
             handleCurrentChange(val) {
                 this.currentPage = val;
-                this.offset = (val - 1)*this.limit;
-                this.getLearns()
+                this.offset = (val - 1) * this.limit;
+                this.getTrainingList();
             },
             handleEdit(row) {
                 // console.log(row)
