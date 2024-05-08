@@ -2,11 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.training.core.mapper.MaterialMapper">
 <select id="findMaterialList" resultType="com.example.training.core.entity.vo.MaterialListVO">
-    select material_id,material_name,material_type,user_id,file_id,file_status,is_del,create_time,update_time
+    select material.material_id,material_name,material_type,user_id,file_id,file_status,material.is_del,material.create_time,material.update_time
      from material
-     where is_del = 0
-    <if test="limit != null and offset != null">
-        limit #{limit} offset #{offset}
+     left join material_audit on material_audit.material_id=material.material_id
+     where material.is_del = 0 and material_audit.audit_status=#{auditStatus}
+    <if test="param != null and param.offset != null">
+        limit #{param.limit} offset #{param.offset}
     </if>
 </select>
 </mapper>

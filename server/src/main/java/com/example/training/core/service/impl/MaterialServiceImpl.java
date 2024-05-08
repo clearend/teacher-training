@@ -2,6 +2,7 @@ package com.example.training.core.service.impl;
 
 import com.example.training.core.entity.Material;
 import com.example.training.core.entity.dto.TrainingListDTO;
+import com.example.training.core.entity.enums.AuditEnum;
 import com.example.training.core.entity.request.MaterialListRequest;
 import com.example.training.core.entity.vo.MaterialListVO;
 import com.example.training.core.mapper.MaterialMapper;
@@ -33,7 +34,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         TrainingListDTO trainingListDTO = new TrainingListDTO();
         trainingListDTO.setOffset(offset);
         trainingListDTO.setLimit(pageSize);
-        List<MaterialListVO> materialListVOS=materialMapper.findMaterialList(trainingListDTO);
+        List<MaterialListVO> materialListVOS=materialMapper.findMaterialList(trainingListDTO, AuditEnum.PASS.getCode());
         return materialListVOS;
     }
 }

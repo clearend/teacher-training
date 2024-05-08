@@ -37,4 +37,11 @@ public class MaterialController {
     public ResultResponse<List<MaterialListVO>> findMaterialList(@RequestBody MaterialListRequest materialListRequest){
         return ResultResponse.success(iMaterialService.findMaterialList(materialListRequest));
     }
+
+//    @PermissionAccess
+//    @PostMapping("/uploadMaterial")
+//    @Operation(summary = "上传素材")
+//    public ResultResponse uploadMaterial(@RequestBody MaterialListRequest materialListRequest){
+//        return ResultResponse.success(iMaterialService.uploadMaterial(materialListRequest));
+//    }
 }
