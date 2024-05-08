@@ -7,14 +7,10 @@ import com.example.training.core.entity.Training;
 import com.example.training.core.entity.TrainingUser;
 import com.example.training.core.entity.User;
 import com.example.training.core.entity.dto.TrainingListDTO;
+import com.example.training.core.entity.enums.RoleEnum;
 import com.example.training.core.entity.enums.TrainTypeEnum;
-import com.example.training.core.entity.request.CreateTrainingRequest;
-import com.example.training.core.entity.request.SingleIdRequest;
-import com.example.training.core.entity.request.TrainingListRequest;
-import com.example.training.core.entity.vo.FindTrainListVO;
-import com.example.training.core.entity.vo.TrainingInfoVO;
-import com.example.training.core.entity.vo.TrainingListItemVO;
-import com.example.training.core.entity.vo.TrainingUserListItemVO;
+import com.example.training.core.entity.request.*;
+import com.example.training.core.entity.vo.*;
 import com.example.training.core.mapper.TrainingMapper;
 import com.example.training.core.mapper.TrainingUserMapper;
 import com.example.training.core.mapper.UserMapper;
@@ -26,6 +22,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -42,6 +39,9 @@ public class TrainingServiceImpl extends ServiceImpl<TrainingMapper, Training> i
 
     @Resource
     private TrainingUserMapper trainingUserMapper;
+
+    @Resource
+    private UserMapper userMapper;
 
     /**
      * 新建培训
@@ -131,5 +131,31 @@ public class TrainingServiceImpl extends ServiceImpl<TrainingMapper, Training> i
         }
 
         return trainingInfoVO;
+    }
+
+    @Override
+    public List<UserListItemVO> findNotInUserList(SingleIdRequest singleIdRequest) {
+        Training training = trainingMapper.selectOne(new LambdaQueryWrapper<Training>().eq(Training::getTrainingId, singleIdRequest.getId()));
+        if (Objects.isNull(training)) {
+            throw new BizException("待查询培训不存在");
+        }
+
+        List<TrainingUser> trainingUserList = trainingUserMapper.selectList(
+                new LambdaQueryWrapper<TrainingUser>()
+                        .select(TrainingUser::getUserId)
+                        .eq(TrainingUser::getTrainingId, singleIdRequest.getId())
+        );
+        List<String> userIdList = trainingUserList.stream().map(TrainingUser::getUserId).toList();
+
+        MPJLambdaWrapper<User> wrapper = new MPJLambdaWrapper<>();
+        wrapper.select(User::getUserId, User::getUserName, User::getJobId)
+                .eq(User::getRole, RoleEnum.USER.getCode())
+                .notIn(User::getUserId, userIdList);
+        List<UserListItemVO> notInUserList = userMapper.selectJoinList(UserListItemVO.class, wrapper);
+        if (notInUserList == null) {
+            notInUserList = Collections.emptyList();
+        }
+
+        return notInUserList;
     }
 }

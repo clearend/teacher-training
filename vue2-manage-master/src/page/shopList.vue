@@ -70,23 +70,23 @@
             <el-dialog title="培训详情" v-model="dialogFormVisible">
                 <el-form :model="selectTable" ref="trainingInfoForm" :rules="rules">
                     <el-form-item label="培训标题" label-width="100px" prop="trainingName">
-                        <el-input v-model="selectTable.trainingName" auto-complete="off"></el-input>
+                        <el-input v-model="selectTable.trainingName" auto-complete="off" :disabled="updateTrainingInfoSwitch"></el-input>
                     </el-form-item>
                     <el-form-item label="培训地点" label-width="100px" prop="trainingAddress">
-                        <el-input v-model="selectTable.trainingAddress"></el-input>
+                        <el-input v-model="selectTable.trainingAddress" :disabled="updateTrainingInfoSwitch"></el-input>
                     </el-form-item>
                     <el-form-item label="培训时间" label-width="100px" prop="trainingTime">
-                        <el-date-picker v-model="selectTable.trainingTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
+                        <el-date-picker v-model="selectTable.trainingTime" type="datetime" placeholder="选择日期时间" :disabled="updateTrainingInfoSwitch"></el-date-picker>
                     </el-form-item>
                     <el-form-item label="培训类型" label-width="100px" prop="trainingType">
-                        <el-select v-model="selectTable.trainingType" placeholder="请选择培训类型">
+                        <el-select v-model="selectTable.trainingType" placeholder="请选择培训类型" :disabled="updateTrainingInfoSwitch">
                             <el-option label="校级" value="100"></el-option>
                             <el-option label="省市级" value="200"></el-option>
                             <el-option label="国家级" value="300"></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="培训内容" label-width="100px" prop="trainingContent">
-                        <el-input type="textarea" v-model="selectTable.trainingContent"></el-input>
+                    <el-form-item label="培训内容" label-width="100px" prop="trainingContent" >
+                        <el-input type="textarea" v-model="selectTable.trainingContent" :disabled="updateTrainingInfoSwitch"></el-input>
                     </el-form-item>
                 </el-form>
 
@@ -118,8 +118,9 @@
 				</el-row>
 
                 <div slot="footer" class="dialog-footer">
-                    <el-button @click="dialogFormVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="updateLearn">确 定</el-button>
+                    <el-button @click="updateTrainingInfoSwitch === true ? dialogFormVisible = false : updateTrainingInfoSwitch = true">取 消</el-button>
+                    <el-button type="warning" @click="updateTrainingInfoSwitch = false" :disabled="!updateTrainingInfoSwitch">编辑</el-button>
+                    <el-button type="primary" @click="updateLearn" :disabled="updateTrainingInfoSwitch">确 定</el-button>
                 </div>
             </el-dialog>
 
@@ -129,9 +130,8 @@
                     <el-select v-model="selectedTeachers" multiple placeholder="请选择">
                         <el-option
                             v-for="item in teacherList"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
+                                :label="item.userName + ' ' + item.jobId"
+                                :value="item.userId">
                         </el-option>
                     </el-select>
 
@@ -158,6 +158,8 @@
 </template>
 
 <script>
+
+    import th from "element-ui/lib/locale/lang/th";
 
     const demoTrainList = [
         {
@@ -229,6 +231,7 @@
                 addItemList: {},
                 teacherList: [],
                 selectedTeachers: [],
+                updateTrainingInfoSwitch: true,
                 rules: {
                     trainingName: [{required: true, message: '请输入培训名称', trigger: 'blur'}],
                     trainingAddress: [{required: true, message: '请输入培训地址', trigger: 'blur'}],
@@ -278,18 +281,27 @@
                 this.getTrainingList();
             },
             async handleEdit(row) {
+                this.updateTrainingInfoSwitch = true;
+                await this.getTrainingInfo(row.trainingId)
+
+                this.dialogFormVisible = true;
+            },
+            async getTrainingInfo(trainingId) {
                 const res = await postMethod("/core/training/info", JSON.stringify(
                     {
-                        id: row.trainingId,
+                        id: trainingId,
                     }
                 ));
 
                 if (res.data.code === 200) {
                     this.selectTable = res.data.data;
                     this.selectTable.trainingTime = new Date(this.selectTable.trainingTime);
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.data.msg,
+                    });
                 }
-
-                this.dialogFormVisible = true;
             },
             handleDelete(row) {
                 this.$confirm("确定要删除该培训？", "提示", {
@@ -395,7 +407,7 @@
             },
             deleteItem(row) {
                 console.log(row)
-                this.$confirm("确定要删除该培训？", "提示", {
+                this.$confirm("确定要删将该用户从培训中移除？", "提示", {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
@@ -403,49 +415,60 @@
                     showClose: false,
                     closeOnClickModal: false
                 }).then(async () => {
-                    const res = await postMethod('/core/training/delete', JSON.stringify({id: row.trainingId}));
+                    const res = await postMethod('/core/trainingUser/deletePerson', JSON.stringify(
+                        {
+                            trainingId: this.selectTable.trainingId,
+                            userId: row.userId,
+                        })
+                    );
                     if (res.data.code === 200) {
                         this.$message({
                             type: 'success',
                             message: '删除成功',
                         });
-                        await this.getTrainingList();
+                        await this.getTrainingInfo(this.selectTable.trainingId);
                     } else {
                         this.$message({
                             type: 'error',
-                            message: '删除失败',
+                            message: res.data.msg,
                         });
                     }
                 }).catch();
 
             },
-            addItem() {
-                // this.addItemList = {
-                //     "name": "",
-                //     "jobId": "",
-                //     "date": "",
-                // };
+            async addItem() {
 
-                let now = new Date();
-                this.selectedTeachers.forEach(element => {
-                    let newTeacher = demoTeacherList[element];
-                    this.selectTable.trainList.push({
-                        name: newTeacher.name,
-                        jobId: newTeacher.jobId,
-                        date: now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate(),
+                const res = await postMethod('/core/trainingUser/addPerson', JSON.stringify({
+                    trainingId: this.selectTable.trainingId,
+                    userList: this.selectedTeachers,
+                }));
+
+                if (res.data.code === 200) {
+                    this.$message({
+                        type: 'success',
+                        message: '添加成功'
                     });
-                });
 
-                // this.selectTable.trainList.push(this.addItemList);
+                    await this.getTrainingInfo(this.selectTable.trainingId);
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.data.msg,
+                    });
+                }
+
                 this.specsFormVisible = false;
-                this.$message({
-                    type: 'success',
-                    message: '添加成功'
-                });
+
             },
-            addItemForm() {
-                this.teacherList = [];
+            async addItemForm() {
                 this.selectedTeachers = [];
+                const res = await postMethod('/core/training/notInUserList', JSON.stringify({
+                    id: this.selectTable.trainingId,
+                }));
+                if (res.data.code === 200) {
+                    this.teacherList = res.data.data;
+                }
+
                 demoTeacherList.forEach((element, index) => {
                     this.teacherList.push({
                         key: element.jobId,

@@ -19,7 +19,7 @@ import java.util.List;
  */
 public interface TrainingUserMapper extends MPJBaseMapper<TrainingUser> {
 
-    void addPerson(@Param("trainingId") String trainingId,@Param("user") User user,@Param("create_id") String createId);
+    void addPerson(@Param("trainingId") String trainingId,@Param("userId") String userId, @Param("create_id") String createId);
 
     void cancelSignUp( @Param("trainingId") String trainingId, @Param("user") String user);
 

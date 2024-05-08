@@ -2,10 +2,7 @@ package com.example.training.core.controller;
 
 import com.example.training.common.ResultResponse;
 import com.example.training.common.annotations.PermissionAccess;
-import com.example.training.core.entity.request.CreateTrainingRequest;
-import com.example.training.core.entity.request.SingleIdRequest;
-import com.example.training.core.entity.request.TrainingListRequest;
-import com.example.training.core.entity.request.UserListRequest;
+import com.example.training.core.entity.request.*;
 import com.example.training.core.entity.vo.FindTrainListVO;
 import com.example.training.core.entity.vo.TrainingInfoVO;
 import com.example.training.core.entity.vo.UserListItemVO;
@@ -51,6 +48,13 @@ public class TrainingController {
     public ResultResponse<FindTrainListVO> findTrainList(@RequestBody TrainingListRequest trainingListRequest) {
         //入参 培训id
         return ResultResponse.success(iTrainingService.findTrainList(trainingListRequest));
+    }
+
+    @PermissionAccess
+    @PostMapping("/notInUserList")
+    @Operation(summary = "查看未参加培训人员列表")
+    public ResultResponse<List<UserListItemVO>> findNotInUserList(@RequestBody SingleIdRequest singleIdRequest) {
+        return ResultResponse.success(iTrainingService.findNotInUserList(singleIdRequest));
     }
 
     @PermissionAccess
