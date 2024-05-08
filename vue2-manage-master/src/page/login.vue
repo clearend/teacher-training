@@ -72,11 +72,11 @@ export default {
                             message: '登录成功'
                         });
 
-                        if (this.loginForm.username === 'user') {
+                        if (res.data.data.role === 'admin') {
                             this.$router.push('manageUser')
-                            return;
+                        } else if (res.data.data.role === 'user') {
+                            this.$router.push('manage')
                         }
-                        this.$router.push('manage')
                     } else {
                         this.$message({
                             type: 'error',

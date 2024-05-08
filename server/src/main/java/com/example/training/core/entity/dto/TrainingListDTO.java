@@ -7,4 +7,6 @@ public class TrainingListDTO {
     private Integer offset;
 
     private Integer limit;
+
+    private String queryUserId;
 }

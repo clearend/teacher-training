@@ -2,17 +2,16 @@ package com.example.training.core.controller;
 
 import com.example.training.common.ResultResponse;
 import com.example.training.common.annotations.PermissionAccess;
+import com.example.training.core.entity.User;
 import com.example.training.core.entity.request.*;
 import com.example.training.core.entity.vo.FindTrainListVO;
 import com.example.training.core.entity.vo.TrainingInfoVO;
 import com.example.training.core.entity.vo.UserListItemVO;
 import com.example.training.core.service.ITrainingService;
-import com.example.training.core.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
@@ -45,9 +44,22 @@ public class TrainingController {
     @PermissionAccess
     @PostMapping("/findTrainList")
     @Operation(summary = "查看培训列表")
-    public ResultResponse<FindTrainListVO> findTrainList(@RequestBody TrainingListRequest trainingListRequest) {
+    public ResultResponse<FindTrainListVO> findTrainList(
+            @RequestBody TrainingListRequest trainingListRequest,
+            @RequestAttribute("user") User user
+    ) {
         //入参 培训id
-        return ResultResponse.success(iTrainingService.findTrainList(trainingListRequest));
+        return ResultResponse.success(iTrainingService.findTrainList(trainingListRequest, user));
+    }
+
+    @PermissionAccess
+    @PostMapping("/list/user")
+    @Operation(summary = "查看培训列表用户")
+    public ResultResponse<FindTrainListVO> findUserList(
+            @RequestBody TrainingListRequest trainingListRequest,
+            @RequestAttribute("user") User user
+    ) {
+        return ResultResponse.success(iTrainingService.getTrainingListUser(trainingListRequest, user));
     }
 
     @PermissionAccess

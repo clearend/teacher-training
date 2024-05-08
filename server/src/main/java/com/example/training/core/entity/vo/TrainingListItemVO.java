@@ -1,6 +1,7 @@
 package com.example.training.core.entity.vo;
 
 import com.example.training.core.entity.enums.TrainTypeEnum;
+import com.example.training.core.entity.enums.TrainingUserStatusEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -32,4 +33,10 @@ public class TrainingListItemVO {
 
     @Schema(description = "完成度")
     private Integer trainingProgress;
+
+    @Schema(description = "是否参与")
+    private Boolean isParticipate;
+
+    @Schema(description = "参与状态")
+    private TrainingUserStatusEnum status;
 }

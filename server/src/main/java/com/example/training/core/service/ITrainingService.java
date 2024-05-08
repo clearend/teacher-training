@@ -2,6 +2,7 @@ package com.example.training.core.service;
 
 import com.example.training.core.entity.Training;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.training.core.entity.User;
 import com.example.training.core.entity.request.*;
 import com.example.training.core.entity.vo.FindTrainListVO;
 import com.example.training.core.entity.vo.TrainingInfoVO;
@@ -21,7 +22,7 @@ public interface ITrainingService extends IService<Training> {
 
     void createTraining(CreateTrainingRequest createTrainingRequest);
 
-    FindTrainListVO findTrainList(TrainingListRequest createTrainingRequest);
+    FindTrainListVO findTrainList(TrainingListRequest createTrainingRequest, User user);
 
     void deleteTraining(SingleIdRequest singleIdRequest);
 
@@ -30,4 +31,6 @@ public interface ITrainingService extends IService<Training> {
     List<UserListItemVO> findNotInUserList(SingleIdRequest singleIdRequest);
 
     void updateTraining(CreateTrainingRequest createTrainingRequest);
+
+    FindTrainListVO getTrainingListUser(TrainingListRequest trainingListRequest, User user);
 }

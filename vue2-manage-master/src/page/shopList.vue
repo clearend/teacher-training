@@ -369,7 +369,6 @@
                 return '';
             },
             deleteItem(row) {
-                console.log(row)
                 this.$confirm("确定要删将该用户从培训中移除？", "提示", {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',

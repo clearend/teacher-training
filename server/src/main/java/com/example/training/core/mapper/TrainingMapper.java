@@ -27,4 +27,6 @@ public interface TrainingMapper extends MPJBaseMapper<Training> {
     List<TrainingListItemVO> findTrainList(@Param("param") TrainingListDTO trainingListDTO);
 
     Float getComp(FindTrainListVO vo);
+
+    List<TrainingListItemVO> findTrainListUser(@Param("param") TrainingListDTO trainingListDTO);
 }

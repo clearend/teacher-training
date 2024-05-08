@@ -1,6 +1,7 @@
 package com.example.training.core.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.example.training.common.exceptions.BizException;
 import com.example.training.common.exceptions.PermissionDenyException;
 import com.example.training.core.entity.Training;
@@ -32,17 +33,22 @@ public class TrainingUserServiceImpl extends ServiceImpl<TrainingUserMapper, Tra
     @Resource
     private TrainingUserMapper trainingUserMapper;
     @Override
-    public void addPerson(AddPersonRequest createTrainingRequest,User user1) {
+    public void addPerson(AddPersonRequest createTrainingRequest, User user1) {
         List<String> userList = createTrainingRequest.getUserList();
-        if(userList!=null && userList.size()>0){
-            for(String user: userList){
+        if (userList != null && !userList.isEmpty()){
+            for (String userId: userList) {
                 //查看是否已经报过名
-//                String flag=trainingUserMapper.getTrainingUserById(createTrainingRequest.getTrainingId(),user.getUserId());
-//                if("1".equals(flag)){
-//                     continue;
-//                }else{
-                trainingUserMapper.addPerson(createTrainingRequest.getTrainingId(),user,user1.getUserId());
-//                }
+                Integer flag = trainingUserMapper.getTrainingUserById(createTrainingRequest.getTrainingId(), userId);
+                if (flag == null) {
+                    trainingUserMapper.addPerson(createTrainingRequest.getTrainingId(), userId, user1.getUserId());
+                    continue;
+                }
+                if (flag == 0) {
+                    throw new BizException("请勿重复参与");
+                }
+                if (flag == 1) {
+                    trainingUserMapper.updatePerson(createTrainingRequest.getTrainingId(), userId);
+                }
             }
         }
     }

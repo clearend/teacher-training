@@ -10,6 +10,8 @@
         <result column="training_address" property="trainingAddress"/>
         <result column="training_content" property="trainingContent"/>
         <result column="training_progress" property="trainingProgress"/>
+        <result column="is_participate" property="isParticipate"/>
+        <result column="status" property="status"/>
     </resultMap>
 
     <insert id="createTraining">
@@ -21,11 +23,25 @@
 
     <select id="findTrainList" resultMap="TrainingListItem">
         select t1.training_id, t1.training_name, t1.training_type, t1.training_time, t1.training_address, t1.training_content,
-            IF(COUNT(t2.status) = 0, 0, SUM(IF((t2.status = 200 and t2.is_del = 0), 1, 0)) / COUNT(t2.status) * 100) AS training_progress
+            IF(COUNT(t2.status) = 0, 0, SUM(IF((t2.status = 200 and t2.is_del = 0), 1, 0)) / COUNT(t2.status) * 100) AS training_progress,
+            SUM(IF(t2.user_id = #{param.queryUserId}, 1, 0)) > 0 AS is_participate
         from training t1
         left join training_user t2 on t1.training_id = t2.training_id
         where t1.is_del = '0'
         group by t1.training_id
+        <if test="param != null and param.offset != null">
+            limit #{param.limit} offset #{param.offset}
+        </if>
+    </select>
+
+    <select id="findTrainListUser" resultMap="TrainingListItem">
+        select t1.training_id, t1.training_name, t1.training_type, t1.training_time, t1.training_address, t1.training_content, IF(t2.is_del = 1, null, t2.status) AS `status`
+        from training t1
+        left join training_user t2 on t1.training_id = t2.training_id
+        <if test="param.queryUserId != null and param.queryUserId != ''">
+            and t2.user_id = #{param.queryUserId}
+        </if>
+        where t1.is_del = 0
         <if test="param != null and param.offset != null">
             limit #{param.limit} offset #{param.offset}
         </if>

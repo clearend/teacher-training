@@ -10,8 +10,12 @@
         update training_user set is_del='1',update_time=now() where training_id=#{trainingId} and user_id=#{user}
     </select>
 
-    <select id="getTrainingUserById" resultType="String">
-        select '1'
-        from training_user where where training_id=#{trainingId} and user_id=#{user}
+    <select id="getTrainingUserById" resultType="Integer">
+        select is_del
+        from training_user where training_id=#{trainingId} and user_id=#{userId}
     </select>
+
+    <update id="updatePerson" >
+        UPDATE training_user SET is_del = 0 WHERE training_id=#{trainingId} AND user_id=#{userId}
+    </update>
 </mapper>

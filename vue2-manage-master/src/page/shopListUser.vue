@@ -8,21 +8,27 @@
                 highlight-current-row
                 style="width: 100%">
                 <el-table-column type="index" width="100"></el-table-column>
-                <el-table-column label="培训主题" property="name"></el-table-column>
-                <el-table-column label="培训地点" property="location"></el-table-column>
-                <el-table-column label="培训描述" property="description"></el-table-column>
-                <el-table-column label="状态" property="status"></el-table-column>
+                <el-table-column label="培训名称" property="trainingName"></el-table-column>
+                <el-table-column label="培训地点" property="trainingAddress"></el-table-column>
+                <el-table-column label="培训时间" property="trainingTime"></el-table-column>
+                <el-table-column label="培训类型" property="trainingType"></el-table-column>
+                <el-table-column label="状态" property="status">
+                    <template slot-scope="scope">
+                        <el-button v-if="scope.row.status === '0'" size="small" type="info">未参加</el-button>
+                        <el-button v-if="scope.row.status === '100'" size="small" type="warning">待完成</el-button>
+                        <el-button v-if="scope.row.status === '150'" size="small" type="primary">待审核</el-button>
+                        <el-button v-if="scope.row.status === '200'" size="small" type="success">已完成</el-button>
+                        <el-button v-if="scope.row.status === '300'" size="small" type="danger">未完成</el-button>
+                    </template>
+                </el-table-column>
                 <el-table-column label="操作" width="300">
                     <template slot-scope="scope">
-                        <el-button v-if="scope.row.status === '待报名'" size="small" type="success" @click="handleJoin(scope.row)">报名</el-button>
-                        
-                        <el-button v-if="scope.row.status === '待完成'" size="small" type="warning" @click="handleReport(scope.row)">学习上报</el-button>
-                        <el-button v-if="scope.row.status === '待完成'" size="small" type="danger" @click="handleCancleJoin(scope.row)">取消报名</el-button>
-
-                        <el-button v-if="scope.row.status === '已完成'" size="small" type="primary" @click="finishFormVisible = true">查看详情</el-button>
-
-                        <!-- <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button> -->
-                        <!-- <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button> -->
+                        <el-button v-if="scope.row.status === '0'" size="small" type="success" @click="handleJoin(scope.row)">报名</el-button>
+                        <el-button v-if="scope.row.status === '100'" size="small" type="warning" @click="handleCancelJoin(scope.row)">取消报名</el-button>
+                        <el-button v-if="scope.row.status === '100'" size="small" type="info" @click="handleReport(scope.row)">学习上报</el-button>
+                        <el-button v-if="scope.row.status === '150'" size="small" type="danger" @click="handleCancleJoin(scope.row)">撤销上报</el-button>
+                        <el-button v-if="scope.row.status === '200'" size="small" type="primary" @click="finishFormVisible = true">查看详情</el-button>
+                        <el-button v-if="scope.row.status === '300'" size="small" type="primary" @click="finishFormVisible = true">查看详情</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -79,6 +85,8 @@
 </template>
 
 <script>
+    import ca from "element-ui/lib/locale/lang/ca";
+
     const demoLearnData = [
         {
             "name": "创新教育理念研讨会",
@@ -211,9 +219,10 @@
 
     import headTop from '../components/headTop'
     import {baseUrl, baseImgPath} from '@/config/env'
+    import {postMethod} from "@/api/getDataLocal";
     import {cityGuess, getResturants, getResturantsCount, foodCategory, updateResturant, searchplace, deleteResturant} from '@/api/getData'
     export default {
-        data(){
+        data() {
             return {
                 baseUrl,
                 baseImgPath,
@@ -233,16 +242,43 @@
                 finishFormVisible: false,
             }
         },
-        created(){
+        created() {
             this.initData();
         },
         components: {
             headTop,
         },
         methods: {
-            initData(){
-                this.getLearns();
+            async initData() {
+                await this.getTrainingList();
                 this.count = demoLearnData.length;
+            },
+            async getTrainingList() {
+                const res = await postMethod('/core/training/list/user',  JSON.stringify({
+                    pageRequest: {
+                        currentPage: this.currentPage,
+                        pageSize: this.limit,
+                    },
+                }));
+
+                if (res.data.code === 200) {
+                    this.count = res.data.data.count;
+                    this.tableData = res.data.data.trainingList;
+                    this.tableData.forEach(item => {
+                         switch (item.status) {
+                             case "待完成": item.status = "100"; break;
+                             case "已完成": item.status = "200"; break;
+                             case "未完成": item.status = "300"; break;
+                             case "已提交": item.status = "150"; break;
+                             default: item.status = "0";
+                         }
+                    })
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.data.msg,
+                    });
+                }
             },
             async getLearns(){
                 this.tableData = demoLearnData.slice(this.offset, this.offset + this.limit);
@@ -260,12 +296,56 @@
                 this.selectTable = row;
                 this.dialogFormVisible = true;
             },
-            handleJoin(row) {
-                row.status = "待完成";
-                this.$message({
-                    type: 'success',
-                    message: '报名成功，请记得按时参与'
-                });
+            async handleJoin(row) {
+                const res = await postMethod('/core/trainingUser/addPerson',  JSON.stringify({
+                    trainingId: row.trainingId,
+                    userList: [
+                        localStorage.getItem("userId")
+                    ],
+                }));
+
+                if (res.data.code === 200) {
+                    this.$message({
+                        type: 'success',
+                        message: '报名成功，请记得按时参与'
+                    });
+
+                    await this.getTrainingList();
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.data.msg,
+                    });
+                }
+            },
+            async handleCancelJoin(row) {
+                this.$confirm("确定要取消参与此次培训？", "提示", {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    showCancelButton: true,
+                    showClose: false,
+                    closeOnClickModal: false
+                }).then(async () => {
+                    const res = await postMethod('/core/trainingUser/deletePerson', JSON.stringify(
+                        {
+                            trainingId: row.trainingId,
+                            userId: localStorage.getItem("userId"),
+                        })
+                    );
+                    if (res.data.code === 200) {
+                        this.$message({
+                            type: 'success',
+                            message: '取消报名成功',
+                        });
+                        await this.getTrainingList();
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: res.data.msg,
+                        });
+                    }
+                }).catch();
             },
             handleCancleJoin(row) {
                 row.status = "待报名";

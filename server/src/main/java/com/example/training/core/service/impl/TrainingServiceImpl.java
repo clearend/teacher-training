@@ -63,7 +63,7 @@ public class TrainingServiceImpl extends ServiceImpl<TrainingMapper, Training> i
     }
 
     @Override
-    public FindTrainListVO findTrainList(TrainingListRequest trainingListRequest) {
+    public FindTrainListVO findTrainList(TrainingListRequest trainingListRequest, User user) {
         Integer currentPage = trainingListRequest.getPageRequest().getCurrentPage();
         Integer pageSize = trainingListRequest.getPageRequest().getPageSize();
         Integer offset = (currentPage - 1) * pageSize;
@@ -74,6 +74,7 @@ public class TrainingServiceImpl extends ServiceImpl<TrainingMapper, Training> i
         TrainingListDTO trainingListDTO = new TrainingListDTO();
         trainingListDTO.setOffset(offset);
         trainingListDTO.setLimit(pageSize);
+        trainingListDTO.setQueryUserId(user.getUserId());
 
         FindTrainListVO findTrainListVO = new FindTrainListVO();
         List<TrainingListItemVO> trainingListItemVOList = trainingMapper.findTrainList(trainingListDTO);
@@ -170,5 +171,31 @@ public class TrainingServiceImpl extends ServiceImpl<TrainingMapper, Training> i
         Training newTraining = new Training();
         BeanUtils.copyProperties(createTrainingRequest, newTraining);
         trainingMapper.update(newTraining, new LambdaUpdateWrapper<Training>().eq(Training::getId, training.getId()));
+    }
+
+    @Override
+    public FindTrainListVO getTrainingListUser(TrainingListRequest trainingListRequest, User user) {
+        Integer currentPage = trainingListRequest.getPageRequest().getCurrentPage();
+        Integer pageSize = trainingListRequest.getPageRequest().getPageSize();
+        Integer offset = (currentPage - 1) * pageSize;
+
+        FindTrainListVO findTrainListVO = new FindTrainListVO();
+
+        Long count = trainingMapper.selectCount(new LambdaQueryWrapper<Training>());
+        findTrainListVO.setCount(count);
+
+        TrainingListDTO trainingListDTO = new TrainingListDTO();
+        trainingListDTO.setOffset(offset);
+        trainingListDTO.setLimit(pageSize);
+        trainingListDTO.setQueryUserId(user.getUserId());
+
+        List<TrainingListItemVO> trainingListItemVOList = trainingMapper.findTrainListUser(trainingListDTO);
+
+        if (trainingListItemVOList != null && !trainingListItemVOList.isEmpty()) {
+            findTrainListVO.setTrainingList(trainingListItemVOList);
+        } else {
+            findTrainListVO.setTrainingList(Collections.emptyList());
+        }
+        return findTrainListVO;
     }
 }
