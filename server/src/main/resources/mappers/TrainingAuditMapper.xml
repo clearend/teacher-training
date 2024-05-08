@@ -6,4 +6,9 @@
                              ,is_del=#{isDel},update_time=now() where training_audit_id=#{trainingAuditId}
 
  </select>
+
+    <insert id="uploadLearnRecord">
+       insert into  training_audit(training_audit_id,training_id,user_id,content,file_id,audit_status,audit_time,audit_remark,is_del,create_time,update_time)
+       values(#{trainingAuditId},#{trainingId},#{userId},#{content},#{fileId},#{auditStatus},#{auditTime},#{auditRemark},#{isDel},now(),now())
+    </insert>
 </mapper>
