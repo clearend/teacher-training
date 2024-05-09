@@ -2,20 +2,70 @@
     <div class="fillcontain">
         <head-top></head-top>
 
+        <div style="text-align: right; padding-right: 40px; margin-top: 10px;">
+            <el-button
+                    size="small"
+                    type="success"
+                    style="padding-left: 10px; padding-right: 10px;"
+                    @click="handleAdd">我要上传</el-button>
+        </div>
+
+        <el-dialog title="上传素材信息" v-model="addDialogFormVisible">
+            <el-form :model="newTable" ref="newMaterialForm" :rules="rules">
+                <el-form-item label="素材文件" label-width="100px" prop="fileId">
+                    <el-upload
+                            class="upload-demo"
+                            action="http://localhost:8901/core/sysFile/upload"
+                            :on-success="handleFileUploadSuccess"
+                            :on-remove="handleFileRemove">
+                        <el-button size="small" type="primary">点击上传</el-button>
+                        <div slot="tip" class="el-upload__tip">文件大小不超过100MB</div>
+                    </el-upload>
+                </el-form-item>
+
+                <el-form-item label="素材名称" label-width="100px" prop="materialName">
+                    <el-input v-model="newTable.materialName" auto-complete="off"></el-input>
+                </el-form-item>
+
+                <el-form-item label="素材类型" label-width="100px" prop="materialType">
+                    <el-select v-model="newTable.materialType" placeholder="请选择素材类型">
+                        <el-option label="文档" value="0"></el-option>
+                        <el-option label="图片" value="1"></el-option>
+                        <el-option label="视频" value="2"></el-option>
+                        <el-option label="音频" value="3"></el-option>
+                        <el-option label="其他" value="4"></el-option>
+                    </el-select>
+                </el-form-item>
+
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="handleCancelAdd">取 消</el-button>
+                <el-button type="primary" @click="addFile">确 定</el-button>
+            </div>
+        </el-dialog>
+
         <div class="table_container" style="padding-top: 10px;">
             <el-table
 			    :data="tableData"
 			    highlight-current-row
 			    style="width: 100%">
-                <el-table-column type="index" width="100"></el-table-column>
-			    <el-table-column label="提示人" prop="username"></el-table-column>
-			    <el-table-column label="提示内容" prop="content"></el-table-column>
-			    <el-table-column label="提示时间" prop="noticeDate"></el-table-column>
-<!--                <el-table-column label="操作" width="200">-->
-<!--                    <template slot-scope="scope">-->
-<!--                        <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">撤销</el-button>-->
-<!--                    </template>-->
-<!--                </el-table-column>-->
+                <el-table-column label="素材名称" prop="materialName"></el-table-column>
+                <el-table-column label="素材类型" prop="materialType"></el-table-column>
+                <el-table-column label="上传用户" prop="userName"></el-table-column>
+                <el-table-column label="上传日期" prop="uploadTime"></el-table-column>
+                <el-table-column label="审批状态" prop="auditStatus">
+                    <template slot-scope="scope">
+                        <el-button v-if="scope.row.auditStatus === '审核中'" size="small" type="warning">审核中</el-button>
+                        <el-button v-if="scope.row.auditStatus === '已通过'" size="small" type="success">已发布</el-button>
+                        <el-button v-if="scope.row.auditStatus === '未通过'" size="small" type="danger">未通过</el-button>
+                    </template>
+                </el-table-column>
+
+                <el-table-column label="操作" width="200">
+                    <template slot-scope="scope">
+                        <el-button size="small" type="info" @click="handleAuditInfo(scope.row)">查看详情</el-button>
+                    </template>
+                </el-table-column>
 			</el-table>
 
             <div class="Pagination" style="text-align: left;margin-top: 10px;">
@@ -29,32 +79,51 @@
                 </el-pagination>
             </div>
         </div>
+
+        <el-dialog title="素材审批详情" v-model="auditInfoDialogVisible" :show-close="true">
+            <el-form :model="selectTable" ref="auditInfoForm">
+                <el-form-item label="素材名称" label-width="100px">
+                    <el-input v-model="selectTable.materialName" auto-complete="off" :disabled="true"></el-input>
+                </el-form-item>
+                <el-form-item label="素材类型" label-width="100px">
+                    <el-input v-model="selectTable.materialType" :disabled="true"></el-input>
+                </el-form-item>
+                <el-form-item label="用户名称" label-width="100px">
+                    <el-input v-model="selectTable.userName" :disabled="true"></el-input>
+                </el-form-item>
+                <el-form-item label="上传时间" label-width="100px">
+                    <el-input v-model="selectTable.uploadTime" :disabled="true"></el-input>
+                </el-form-item>
+                <el-form-item label="审批状态" label-width="100px">
+                    <el-input v-model="selectTable.auditStatus" :disabled="true"></el-input>
+                </el-form-item>
+                <el-form-item label="下载链接" label-width="100px">
+                    <a :href="selectTable.fileUrl" :download="selectTable.fileName">{{selectTable.fileName}}</a>
+                </el-form-item>
+
+                <el-form-item label="审批意见" label-width="100px">
+                    <el-input v-model="selectTable.auditRemark" type="textarea" :disabled="selectTable.auditStatus !== '审核中'"></el-input>
+                </el-form-item>
+
+                <el-form-item v-if="selectTable.auditStatus !== '审核中'" label="审批时间" label-width="100px">
+                    <el-input v-model="selectTable.auditTime" :disabled="true"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="handleAuditCancel">取 消</el-button>
+                <el-button type='info' @click="handleAuditCancel">确 定</el-button>
+
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
-    const demoNotifyData = [
-        {
-            "username": "管理员",
-            "content": "请记及时修改密码以提高账号安全性",
-            "noticeDate": "2024-04-05 18:30:00"
-        },
-        {
-            "username": "李老师",
-            "content": "今天有重要的在线讨论活动，请准时参加",
-            "noticeDate": "2024-04-10 20:15:00"
-        },
-        {
-            "username": "张老师",
-            "content": "请务必在截止日期前完成作业提交",
-            "noticeDate": "2024-04-15 17:45:00"
-        },
-    ]
 
     import headTop from '../components/headTop'
-    import {getOrderList, getOrderCount, getResturantDetail, getUserInfo, getAddressById} from '@/api/getData'
+    import {postMethod} from "@/api/getDataLocal";
     export default {
-        data(){
+        data() {
             return {
                 tableData: [],
                 currentRow: null,
@@ -65,129 +134,14 @@
                 restaurant_id: null,
                 expendRow: [],
                 addDialogFormVisible: false,
+                auditInfoDialogVisible: false,
                 newTable: {},
-                ansUserList: [
-                    {
-                        "value": 1,
-                        "label": "王小明"
-                    },
-                    {
-                        "value": 2,
-                        "label": "李娜"
-                    },
-                    {
-                        "value": 3,
-                        "label": "张伟"
-                    },
-                    {
-                        "value": 4,
-                        "label": "刘洋"
-                    },
-                    {
-                        "value": 5,
-                        "label": "陈艳"
-                    },
-                    {
-                        "value": 6,
-                        "label": "赵宇航"
-                    },
-                    {
-                        "value": 7,
-                        "label": "孙梦琪"
-                    },
-                    {
-                        "value": 8,
-                        "label": "周阳光"
-                    },
-                    {
-                        "value": 9,
-                        "label": "吴丽丽"
-                    },
-                    {
-                        "value": 10,
-                        "label": "郑小凯"
-                    },
-                    {
-                        "value": 11,
-                        "label": "马晓洁"
-                    },
-                    {
-                        "value": 12,
-                        "label": "黄晓雯"
-                    },
-                    {
-                        "value": 13,
-                        "label": "朱小红"
-                    },
-                    {
-                        "value": 14,
-                        "label": "刘小勇"
-                    },
-                    {
-                        "value": 15,
-                        "label": "吕小芳"
-                    },
-                    {
-                        "value": 16,
-                        "label": "张小敏"
-                    },
-                    {
-                        "value": 17,
-                        "label": "李小刚"
-                    },
-                    {
-                        "value": 18,
-                        "label": "王小婷"
-                    },
-                    {
-                        "value": 19,
-                        "label": "赵小涵"
-                    },
-                    {
-                        "value": 20,
-                        "label": "孙小洋"
-                    },
-                    {
-                        "value": 21,
-                        "label": "周小倩"
-                    },
-                    {
-                        "value": 22,
-                        "label": "吴小雨"
-                    },
-                    {
-                        "value": 23,
-                        "label": "郑小楠"
-                    },
-                    {
-                        "value": 24,
-                        "label": "马小明"
-                    },
-                    {
-                        "value": 25,
-                        "label": "黄小静"
-                    },
-                    {
-                        "value": 26,
-                        "label": "朱小蕾"
-                    },
-                    {
-                        "value": 27,
-                        "label": "刘小峰"
-                    },
-                    {
-                        "value": 28,
-                        "label": "吕小明"
-                    },
-                    {
-                        "value": 29,
-                        "label": "张小娟"
-                    },
-                    {
-                        "value": 30,
-                        "label": "李小红"
-                    }
-                ]
+                selectTable: {},
+                rules: {
+                    fileId: [{required: true, message: "请上传素材文件", trigger: 'blur'}],
+                    materialName: [{required: true, message: "请输入素材名称", trigger: 'blur'}],
+                    materialType: [{required: true, message: "请选择素材类型", trigger: 'blur'}],
+                }
             }
         },
     	components: {
@@ -201,91 +155,96 @@
 
         },
         methods: {
-            async initData(){
-                try{
-                    this.getNotice();
-                    this.count = demoNotifyData.length;
-                }catch(err){
-                    console.log('获取数据失败', err);
+            async getMaterialAuditList() {
+                const res = await postMethod('/core/materialAudit/list', JSON.stringify(
+                    {
+                        pageRequest: {
+                            currentPage: this.currentPage,
+                            pageSize: this.limit,
+                        }
+                    }
+                ));
+
+                console.log(res.data.data.materialAuditList);
+                if (res.data.code === 200) {
+                    this.tableData = res.data.data.materialAuditList;
+                    this.count = res.data.data.count;
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.data.msg
+                    });
                 }
+            },
+            async initData(){
+                await this.getMaterialAuditList();
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
             },
-            handleCurrentChange(val) {
+            async handleCurrentChange(val) {
                 this.currentPage = val;
-                this.offset = (val - 1)*this.limit;
-                this.getNotice()
+                this.offset = (val - 1) * this.limit;
+                await this.getMaterialAuditList()
             },
-            async getNotice(){
-                this.tableData = demoNotifyData.slice(this.offset, this.offset + this.limit);
+            handleAuditInfo(row) {
+                this.selectTable = row;
+                this.auditInfoDialogVisible = true;
             },
-            handleDelete(index, row) {
-                try{
-                    // const res = await deleteFood(row.item_id);
-                    demoNotifyData.splice(this.offset + index, 1);
-                    if (1) {
-                        this.$message({
-                            type: 'success',
-                            message: '删除提醒成功'
-                        });
-                        // this.tableData.splice(index, 1);
-                        this.tableData = demoNotifyData.slice(this.offset, this.offset + this.limit);
-                        this.count = demoNotifyData.length;
-                    } else {
-                        throw new Error(res.message)
-                    }
-                } catch (err) {
-                    this.$message({
-                        type: 'error',
-                        message: err.message
-                    });
-                    console.log('删除提醒失败')
-                }
+            handleAuditCancel() {
+                this.auditInfoDialogVisible = false;
+                this.selectTable = {};
             },
             handleAdd() {
                 this.newTable = {
-                    "username": "",
-                    "content": "",
-                    "noticeDate": "",
-                    "ansUserList": this.ansUserList
+                    "fileId": "",
+                    "materialName": "",
+                    "materialType": "",
                 };
                 this.addDialogFormVisible = true;
             },
-            addUser() {
-                if (this.newTable.username === "") {
-                    this.$message({
-                        type: 'error',
-                        message: '被提醒人不能为空'
-                    });
-                    return;
-                }
-                if (this.newTable.content === "") {
-                    this.$message({
-                        type: 'error',
-                        message: '提醒内容不能为空'
-                    });
-                    return;
-                }
-                if (this.newTable.noticeDate === "") {
-                    this.$message({
-                        type: 'error',
-                        message: '提醒日期不能为空'
-                    });
-                    return;
-                }
+            addFile() {
+                this.$refs.newMaterialForm.validate(async valid => {
+                    if (valid) {
+                        const res = await postMethod('/core/material/upload', JSON.stringify(this.newTable));
 
-                this.addDialogFormVisible = false;
-                demoNotifyData.splice(0, 0, this.newTable);
-                this.count = demoNotifyData.length;
-                this.currentPage = 1;
-                this.tableData = demoNotifyData.slice(0, this.limit);
+                        if (res.data.code === 200) {
+                            this.$message({
+                                type: 'success',
+                                message: "上传成功，等待管理员审核发布",
+                            });
 
-                this.$message({
-                    type: 'success',
-                    message: '添加成功'
+                            this.addDialogFormVisible = false;
+                            await this.getMaterialAuditList();
+                        }
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: "请填写相关信息"
+                        });
+                    }
                 });
-            }
+            },
+            handleCancelAdd() {
+                this.newTable = {
+                    "fileId": "",
+                    "materialName": "",
+                    "materialType": "",
+                };
+                this.addDialogFormVisible = false;
+            },
+            handleFileUploadSuccess(response, file, fileList) {
+                console.log(response)
+                if (response.code === 200) {
+                    this.newTable.fileId = response.data.fileId;
+                    this.newTable.materialName = response.data.fileName;
+                }
+            },
+            handleFileRemove(file, fileList) {
+                this.newTable.fileId = null;
+                this.newTable.materialName = null;
+            },
+
         },
     }
 </script>

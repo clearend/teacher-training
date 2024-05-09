@@ -2,10 +2,11 @@ package com.example.training.core.service;
 
 import com.example.training.core.entity.Material;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.training.core.entity.User;
 import com.example.training.core.entity.request.MaterialListRequest;
+import com.example.training.core.entity.request.SingleIdRequest;
+import com.example.training.core.entity.request.UploadMaterialRequest;
 import com.example.training.core.entity.vo.MaterialListVO;
-
-import java.util.List;
 
 /**
  * <p>
@@ -17,5 +18,9 @@ import java.util.List;
  */
 public interface IMaterialService extends IService<Material> {
 
-    List<MaterialListVO> findMaterialList(MaterialListRequest materialListRequest);
+    MaterialListVO findMaterialList(MaterialListRequest materialListRequest);
+
+    void uploadMaterial(UploadMaterialRequest uploadMaterialRequest, User user);
+
+    void deleteMaterial(SingleIdRequest singleIdRequest);
 }

@@ -2,39 +2,31 @@
     <div class="fillcontain">
         <head-top></head-top>
 
-        <div style="text-align: right; padding-right: 40px; margin-top: 10px;">
-            <el-button
-                size="small"
-                type="success"
-                style="padding-left: 10px; padding-right: 10px;"
-                @click="handleAdd">添加</el-button>
-        </div>
-
-        <el-dialog title="新增提醒信息" v-model="addDialogFormVisible">
-            <el-form :model="newTable">
-                <el-form-item label="被提示人" label-width="100px">
-<!--                    <el-input v-model="newTable.username" auto-complete="off"></el-input>-->
-                    <el-select v-model="newTable.username" placeholder="请选择">
-                        <el-option
-                            v-for="item in newTable.ansUserList"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="提示内容" label-width="100px">
-                    <el-input v-model="newTable.content"></el-input>
-                </el-form-item>
-                <el-form-item label="提示时间" label-width="100px">
-                    <el-input v-model="newTable.noticeDate"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="addDialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="addUser">确 定</el-button>
-            </div>
-        </el-dialog>
+<!--        <el-dialog title="新增提醒信息" v-model="addDialogFormVisible">-->
+<!--            <el-form :model="newTable">-->
+<!--                <el-form-item label="被提示人" label-width="100px">-->
+<!--&lt;!&ndash;                    <el-input v-model="newTable.username" auto-complete="off"></el-input>&ndash;&gt;-->
+<!--                    <el-select v-model="newTable.username" placeholder="请选择">-->
+<!--                        <el-option-->
+<!--                            v-for="item in newTable.ansUserList"-->
+<!--                            :key="item.value"-->
+<!--                            :label="item.label"-->
+<!--                            :value="item.value">-->
+<!--                        </el-option>-->
+<!--                    </el-select>-->
+<!--                </el-form-item>-->
+<!--                <el-form-item label="提示内容" label-width="100px">-->
+<!--                    <el-input v-model="newTable.content"></el-input>-->
+<!--                </el-form-item>-->
+<!--                <el-form-item label="提示时间" label-width="100px">-->
+<!--                    <el-input v-model="newTable.noticeDate"></el-input>-->
+<!--                </el-form-item>-->
+<!--            </el-form>-->
+<!--            <div slot="footer" class="dialog-footer">-->
+<!--                <el-button @click="addDialogFormVisible = false">取 消</el-button>-->
+<!--                <el-button type="primary" @click="addUser">确 定</el-button>-->
+<!--            </div>-->
+<!--        </el-dialog>-->
 
         <div class="table_container" style="padding-top: 10px;">
             <el-table
@@ -42,12 +34,21 @@
 			    highlight-current-row
 			    style="width: 100%">
                 <el-table-column type="index" width="100"></el-table-column>
-			    <el-table-column label="被提示人" prop="username"></el-table-column>
-			    <el-table-column label="提示内容" prop="content"></el-table-column>
-			    <el-table-column label="提示时间" prop="noticeDate"></el-table-column>
+			    <el-table-column label="素材名称" prop="materialName"></el-table-column>
+			    <el-table-column label="素材类型" prop="materialType"></el-table-column>
+			    <el-table-column label="上传用户" prop="userName"></el-table-column>
+			    <el-table-column label="上传日期" prop="uploadTime"></el-table-column>
+			    <el-table-column label="审批状态" prop="auditStatus">
+                    <template slot-scope="scope">
+                        <el-button v-if="scope.row.auditStatus === '审核中'" size="small" type="warning">审核中</el-button>
+                        <el-button v-if="scope.row.auditStatus === '已通过'" size="small" type="success">已发布</el-button>
+                        <el-button v-if="scope.row.auditStatus === '未通过'" size="small" type="danger">未通过</el-button>
+                    </template>
+                </el-table-column>
+
                 <el-table-column label="操作" width="200">
                     <template slot-scope="scope">
-                        <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">撤销</el-button>
+                        <el-button size="small" type="info" @click="handleAuditInfo(scope.row)">查看详情</el-button>
                     </template>
                 </el-table-column>
 			</el-table>
@@ -63,10 +64,48 @@
                 </el-pagination>
             </div>
         </div>
+
+        <el-dialog title="素材审批详情" v-model="auditInfoDialogVisible" :show-close="true">
+            <el-form :model="selectTable" ref="auditInfoForm" :rules="rules">
+                <el-form-item label="素材名称" label-width="100px">
+                    <el-input v-model="selectTable.materialName" auto-complete="off" :disabled="true"></el-input>
+                </el-form-item>
+                <el-form-item label="素材类型" label-width="100px">
+                    <el-input v-model="selectTable.materialType" :disabled="true"></el-input>
+                </el-form-item>
+                <el-form-item label="用户名称" label-width="100px">
+                    <el-input v-model="selectTable.userName" :disabled="true"></el-input>
+                </el-form-item>
+                <el-form-item label="上传时间" label-width="100px">
+                    <el-input v-model="selectTable.uploadTime" :disabled="true"></el-input>
+                </el-form-item>
+                <el-form-item label="审批状态" label-width="100px">
+                    <el-input v-model="selectTable.auditStatus" :disabled="true"></el-input>
+                </el-form-item>
+                <el-form-item label="下载链接" label-width="100px">
+                    <a :href="selectTable.fileUrl" :download="selectTable.fileName">{{selectTable.fileName}}</a>
+                </el-form-item>
+
+                <el-form-item v-if="selectTable.auditStatus !== '审核中'" label="审批意见" label-width="100px">
+                    <el-input v-model="selectTable.auditRemark" type="textarea" :disabled="true"></el-input>
+                </el-form-item>
+
+                <el-form-item v-if="selectTable.auditStatus !== '审核中'" label="审批时间" label-width="100px">
+                    <el-input v-model="selectTable.auditTime" :disabled="true"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="handleAuditCancel">取 消</el-button>
+                <el-button type="danger" @click="handleAudit(0)">驳 回</el-button>
+                <el-button type="success" @click="handleAudit(1)">通 过</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
+    import fa from "element-ui/lib/locale/lang/fa";
+
     const demoNotifyData = [
         {
             "username": "王小明",
@@ -221,7 +260,7 @@
     ]
 
     import headTop from '../components/headTop'
-    import {getOrderList, getOrderCount, getResturantDetail, getUserInfo, getAddressById} from '@/api/getData'
+    import {postMethod} from "@/api/getDataLocal";
     export default {
         data(){
             return {
@@ -234,129 +273,14 @@
                 restaurant_id: null,
                 expendRow: [],
                 addDialogFormVisible: false,
+                auditInfoDialogVisible: false,
                 newTable: {},
-                ansUserList: [
-                    {
-                        "value": 1,
-                        "label": "王小明"
-                    },
-                    {
-                        "value": 2,
-                        "label": "李娜"
-                    },
-                    {
-                        "value": 3,
-                        "label": "张伟"
-                    },
-                    {
-                        "value": 4,
-                        "label": "刘洋"
-                    },
-                    {
-                        "value": 5,
-                        "label": "陈艳"
-                    },
-                    {
-                        "value": 6,
-                        "label": "赵宇航"
-                    },
-                    {
-                        "value": 7,
-                        "label": "孙梦琪"
-                    },
-                    {
-                        "value": 8,
-                        "label": "周阳光"
-                    },
-                    {
-                        "value": 9,
-                        "label": "吴丽丽"
-                    },
-                    {
-                        "value": 10,
-                        "label": "郑小凯"
-                    },
-                    {
-                        "value": 11,
-                        "label": "马晓洁"
-                    },
-                    {
-                        "value": 12,
-                        "label": "黄晓雯"
-                    },
-                    {
-                        "value": 13,
-                        "label": "朱小红"
-                    },
-                    {
-                        "value": 14,
-                        "label": "刘小勇"
-                    },
-                    {
-                        "value": 15,
-                        "label": "吕小芳"
-                    },
-                    {
-                        "value": 16,
-                        "label": "张小敏"
-                    },
-                    {
-                        "value": 17,
-                        "label": "李小刚"
-                    },
-                    {
-                        "value": 18,
-                        "label": "王小婷"
-                    },
-                    {
-                        "value": 19,
-                        "label": "赵小涵"
-                    },
-                    {
-                        "value": 20,
-                        "label": "孙小洋"
-                    },
-                    {
-                        "value": 21,
-                        "label": "周小倩"
-                    },
-                    {
-                        "value": 22,
-                        "label": "吴小雨"
-                    },
-                    {
-                        "value": 23,
-                        "label": "郑小楠"
-                    },
-                    {
-                        "value": 24,
-                        "label": "马小明"
-                    },
-                    {
-                        "value": 25,
-                        "label": "黄小静"
-                    },
-                    {
-                        "value": 26,
-                        "label": "朱小蕾"
-                    },
-                    {
-                        "value": 27,
-                        "label": "刘小峰"
-                    },
-                    {
-                        "value": 28,
-                        "label": "吕小明"
-                    },
-                    {
-                        "value": 29,
-                        "label": "张小娟"
-                    },
-                    {
-                        "value": 30,
-                        "label": "李小红"
-                    }
-                ]
+                selectTable: {},
+                rules: {
+                    auditRemark: [
+                        {required: true, message: '请输入审核备注', trigger: 'blur'}
+                    ]
+                },
             }
         },
     	components: {
@@ -370,89 +294,78 @@
 
         },
         methods: {
-            async initData(){
-                try{
-                    this.getNotice();
-                    this.count = demoNotifyData.length;
-                }catch(err){
-                    console.log('获取数据失败', err);
+            async getMaterialAuditList() {
+                const res = await postMethod('/core/materialAudit/list', JSON.stringify(
+                    {
+                        pageRequest: {
+                            currentPage: this.currentPage,
+                            pageSize: this.limit,
+                        }
+                    }
+                ));
+
+                console.log(res.data.data.materialAuditList);
+                if (res.data.code === 200) {
+                    this.tableData = res.data.data.materialAuditList;
+                    this.count = res.data.data.count;
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.data.msg
+                    });
                 }
+            },
+            async initData(){
+                await this.getMaterialAuditList();
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
             },
-            handleCurrentChange(val) {
+            async handleCurrentChange(val) {
                 this.currentPage = val;
-                this.offset = (val - 1)*this.limit;
-                this.getNotice()
+                this.offset = (val - 1) * this.limit;
+                await this.getMaterialAuditList()
             },
-            async getNotice(){
-                this.tableData = demoNotifyData.slice(this.offset, this.offset + this.limit);
+            handleAuditInfo(row) {
+                this.selectTable = row;
+                this.auditInfoDialogVisible = true;
             },
-            handleDelete(index, row) {
-                try{
-                    // const res = await deleteFood(row.item_id);
-                    demoNotifyData.splice(this.offset + index, 1);
-                    if (1) {
-                        this.$message({
-                            type: 'success',
-                            message: '删除提醒成功'
-                        });
-                        // this.tableData.splice(index, 1);
-                        this.tableData = demoNotifyData.slice(this.offset, this.offset + this.limit);
-                        this.count = demoNotifyData.length;
+            handleAuditCancel() {
+                this.auditInfoDialogVisible = false;
+                this.selectTable = {};
+            },
+            handleAudit(result) {
+                this.$refs.auditInfoForm.validate(async valid => {
+                    if (valid) {
+                        const res = await postMethod("/core/materialAudit/audit", JSON.stringify(
+                            {
+                                auditRemark: this.selectTable.auditRemark,
+                                auditResult: result,
+                                materialAuditId: this.selectTable.materialAuditId
+                            }
+                        ));
+
+                        if (res.data.code === 200) {
+                            this.$message({
+                                type: 'success',
+                                message: '审核成功'
+                            });
+
+                            this.currentPage = 1;
+                            await this.getMaterialAuditList();
+                            this.auditInfoDialogVisible = false;
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                message: res.data.msg
+                            });
+                        }
                     } else {
-                        throw new Error(res.message)
+                        this.$message({
+                            type: 'error',
+                            message: "请填写审核意见"
+                        });
                     }
-                } catch (err) {
-                    this.$message({
-                        type: 'error',
-                        message: err.message
-                    });
-                    console.log('删除提醒失败')
-                }
-            },
-            handleAdd() {
-                this.newTable = {
-                    "username": "",
-                    "content": "",
-                    "noticeDate": "",
-                    "ansUserList": this.ansUserList
-                };
-                this.addDialogFormVisible = true;
-            },
-            addUser() {
-                if (this.newTable.username === "") {
-                    this.$message({
-                        type: 'error',
-                        message: '被提醒人不能为空'
-                    });
-                    return;
-                }
-                if (this.newTable.content === "") {
-                    this.$message({
-                        type: 'error',
-                        message: '提醒内容不能为空'
-                    });
-                    return;
-                }
-                if (this.newTable.noticeDate === "") {
-                    this.$message({
-                        type: 'error',
-                        message: '提醒日期不能为空'
-                    });
-                    return;
-                }
-
-                this.addDialogFormVisible = false;
-                demoNotifyData.splice(0, 0, this.newTable);
-                this.count = demoNotifyData.length;
-                this.currentPage = 1;
-                this.tableData = demoNotifyData.slice(0, this.limit);
-
-                this.$message({
-                    type: 'success',
-                    message: '添加成功'
                 });
             }
         },

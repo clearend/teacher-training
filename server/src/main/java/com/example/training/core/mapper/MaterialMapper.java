@@ -2,7 +2,7 @@ package com.example.training.core.mapper;
 
 import com.example.training.core.entity.Material;
 import com.example.training.core.entity.dto.TrainingListDTO;
-import com.example.training.core.entity.vo.MaterialListVO;
+import com.example.training.core.entity.vo.MaterialListItemVO;
 import com.github.yulichang.base.MPJBaseMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -18,5 +18,5 @@ import java.util.List;
  */
 public interface MaterialMapper extends MPJBaseMapper<Material> {
 
-    List<MaterialListVO> findMaterialList(@Param("param") TrainingListDTO trainingListDTO,@Param("auditStatus") Integer auditStatus );
+    List<MaterialListItemVO> findMaterialList(@Param("param") TrainingListDTO trainingListDTO, @Param("auditStatus") Integer auditStatus );
 }

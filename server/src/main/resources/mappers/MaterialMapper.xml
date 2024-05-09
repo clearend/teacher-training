@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.training.core.mapper.MaterialMapper">
-<select id="findMaterialList" resultType="com.example.training.core.entity.vo.MaterialListVO">
+<select id="findMaterialList" resultType="com.example.training.core.entity.vo.MaterialListItemVO">
     select material.material_id,material_name,material_type,user_id,file_id,file_status,material.is_del,material.create_time,material.update_time
      from material
      left join material_audit on material_audit.material_id=material.material_id

@@ -64,7 +64,7 @@
                     <el-form-item label="培训心得" label-width="100px" prop="reportContent">
                         <el-input v-model="selectTable.reportContent" type="textarea"></el-input>
                     </el-form-item>
-                    <el-form-item label="素材文件" label-width="100px" prop="fileId">
+                    <el-form-item label="附件" label-width="100px" prop="fileId">
                         <el-upload
                                 class="upload-demo"
                                 action="http://localhost:8901/core/sysFile/upload"
@@ -251,13 +251,10 @@
 
 
     import headTop from '../components/headTop'
-    import {baseUrl, baseImgPath} from '@/config/env'
     import {postMethod} from "@/api/getDataLocal";
     export default {
         data() {
             return {
-                baseUrl,
-                baseImgPath,
                 city: {},
                 offset: 0,
                 limit: 15,

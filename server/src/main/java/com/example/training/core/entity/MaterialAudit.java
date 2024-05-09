@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import com.example.training.core.entity.enums.AuditEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,7 +46,7 @@ public class MaterialAudit implements Serializable {
     private AuditEnum auditStatus;
 
     @Schema(description = "审核时间")
-    private LocalDateTime auditTime;
+    private Date auditTime;
 
     @Schema(description = "审核备注")
     private String auditRemark;
@@ -55,10 +56,10 @@ public class MaterialAudit implements Serializable {
     private Integer isDel;
 
     @Schema(description = "创建时间")
-    private LocalDateTime createTime;
+    private Date createTime;
 
     @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
+    private Date updateTime;
 
     @Override
     public String toString() {

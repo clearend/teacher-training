@@ -62,11 +62,11 @@ const routes = [
         },{
             path: '/orderList',
             component: orderList,
-            meta: ['数据管理', '提醒列表'],
+            meta: ['审批管理', '素材审批列表'],
         },{
             path: '/adminList',
             component: adminList,
-            meta: ['数据管理', '培训结果审批列表'],
+            meta: ['审批管理', '培训结果审批列表'],
         },{
             path: '/visitor',
             component: visitor,
@@ -116,7 +116,7 @@ const routes = [
         },{
             path: '/orderListUser',
             component: orderListUser,
-            meta: ['数据管理', '提醒列表'],
+            meta: ['数据管理', '我的上传'],
         },{
             path: '/adminSetUser',
             component: adminSetUser,

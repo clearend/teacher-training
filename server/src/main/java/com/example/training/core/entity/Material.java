@@ -4,9 +4,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.example.training.core.entity.enums.AuditEnum;
+import com.example.training.core.entity.enums.FileStatusEnum;
+import com.example.training.core.entity.enums.MaterialTypeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,7 +40,7 @@ public class Material implements Serializable {
     private String materialName;
 
     @Schema(description = "素材类型")
-    private Integer materialType;
+    private MaterialTypeEnum materialType;
 
     @Schema(description = "上传用户id")
     private String userId;
@@ -46,17 +49,17 @@ public class Material implements Serializable {
     private String fileId;
 
     @Schema(description = "文件状态")
-    private AuditEnum fileStatus;
+    private FileStatusEnum fileStatus;
 
     @Schema(description = "是否删除")
     @TableLogic
     private Integer isDel;
 
     @Schema(description = "创建时间")
-    private LocalDateTime createTime;
+    private Date createTime;
 
     @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
+    private Date updateTime;
 
     @Override
     public String toString() {

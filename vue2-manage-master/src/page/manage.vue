@@ -8,15 +8,17 @@
                         <template slot="title"><i class="el-icon-document"></i>数据管理</template>
                         <el-menu-item index="userList">用户列表</el-menu-item>
                         <el-menu-item index="shopList">培训内容列表</el-menu-item>
-                        <el-menu-item index="adminList">培训审批列表</el-menu-item>
                         <el-menu-item index="foodList">素材列表</el-menu-item>
-                        <el-menu-item index="orderList">提醒列表</el-menu-item>
+
+
                     </el-submenu>
-<!--                    <el-submenu index="3">-->
-<!--                        <template slot="title"><i class="el-icon-plus"></i>添加数据</template>-->
+                    <el-submenu index="3">
+                        <template slot="title"><i class="el-icon-document"></i>审批管理</template>
+                        <el-menu-item index="adminList">培训审批列表</el-menu-item>
+                        <el-menu-item index="orderList">素材审批列表</el-menu-item>
 <!--                        <el-menu-item index="addShop">添加商铺</el-menu-item>-->
 <!--                        <el-menu-item index="addGoods">添加商品</el-menu-item>-->
-<!--                    </el-submenu>-->
+                    </el-submenu>
 <!--                    <el-submenu index="4">-->
 <!--                        <template slot="title"><i class="el-icon-star-on"></i>图表</template>-->
 <!--                        <el-menu-item index="visitor">用户分布</el-menu-item>-->

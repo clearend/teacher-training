@@ -8,7 +8,7 @@
                         <template slot="title"><i class="el-icon-document"></i>数据管理</template>
                         <el-menu-item index="shopListUser">培训内容列表</el-menu-item>
                         <el-menu-item index="foodListUser">素材列表</el-menu-item>
-                        <el-menu-item index="orderListUser">提醒列表</el-menu-item>
+                        <el-menu-item index="orderListUser">我的上传</el-menu-item>
                     </el-submenu>
 <!--                    <el-submenu index="3">-->
 <!--                        <template slot="title"><i class="el-icon-plus"></i>添加数据</template>-->
