@@ -26,9 +26,10 @@
                         <el-button v-if="scope.row.status === '0'" size="small" type="success" @click="handleJoin(scope.row)">报名</el-button>
                         <el-button v-if="scope.row.status === '100'" size="small" type="warning" @click="handleCancelJoin(scope.row)">取消报名</el-button>
                         <el-button v-if="scope.row.status === '100'" size="small" type="info" @click="handleReport(scope.row)">学习上报</el-button>
-                        <el-button v-if="scope.row.status === '150'" size="small" type="danger" @click="handleCancleJoin(scope.row)">撤销上报</el-button>
-                        <el-button v-if="scope.row.status === '200'" size="small" type="primary" @click="finishFormVisible = true">查看详情</el-button>
-                        <el-button v-if="scope.row.status === '300'" size="small" type="primary" @click="finishFormVisible = true">查看详情</el-button>
+                        <el-button v-if="scope.row.status === '150'" size="small" type="danger" @click="handleCancelReport(scope.row)">撤销上报</el-button>
+                        <el-button v-if="scope.row.status === '150'" size="small" type="primary" @click="handleReportInfo(scope.row)">查看详情</el-button>
+                        <el-button v-if="scope.row.status === '200'" size="small" type="primary" @click="handleReportInfo(scope.row)">查看详情</el-button>
+                        <el-button v-if="scope.row.status === '300'" size="small" type="primary" @click="handleReportInfo(scope.row)">查看详情</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -54,6 +55,12 @@
                     <el-form-item label="培训时间" label-width="100px">
                         <el-input v-model="selectTable.trainingTime" :disabled="true"></el-input>
                     </el-form-item>
+                    <el-form-item label="培训类型" label-width="100px">
+                        <el-input v-model="selectTable.trainingType" :disabled="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="培训内容" label-width="100px">
+                        <el-input v-model="selectTable.trainingContent" type="textarea" :disabled="true"></el-input>
+                    </el-form-item>
                     <el-form-item label="培训心得" label-width="100px" prop="reportContent">
                         <el-input v-model="selectTable.reportContent" type="textarea"></el-input>
                     </el-form-item>
@@ -74,19 +81,35 @@
                 </div>
             </el-dialog>
 
-            <el-dialog title="培训完成详情" v-model="finishFormVisible">
+            <el-dialog title="培训完成详情" v-model="finishFormVisible" :show-close="true">
                 <el-form :model="selectTable">
-                    <el-form-item label="培训主题" label-width="100px">
-                        <el-input v-model="selectTable.name" auto-complete="off" :disabled="true"></el-input>
+                    <el-form-item label="培训标题" label-width="100px">
+                        <el-input v-model="selectTable.trainingName" auto-complete="off" :disabled="true"></el-input>
                     </el-form-item>
                     <el-form-item label="培训地点" label-width="100px">
-                        <el-input v-model="selectTable.location" :disabled="true"></el-input>
+                        <el-input v-model="selectTable.trainingAddress" :disabled="true"></el-input>
                     </el-form-item>
-                    <el-form-item label="培训描述" label-width="100px">
-                        <el-input v-model="selectTable.description" :disabled="true"></el-input>
+                    <el-form-item label="培训时间" label-width="100px">
+                        <el-input v-model="selectTable.trainingTime" :disabled="true"></el-input>
                     </el-form-item>
-                    <el-form-item label="培训心得" label-width="100px">
-                        <el-input v-model="selectTable.finishTalk" type="textarea" :disabled="true"></el-input>
+                    <el-form-item label="培训类型" label-width="100px">
+                        <el-input v-model="selectTable.trainingType" :disabled="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="培训内容" label-width="100px">
+                        <el-input v-model="selectTable.trainingContent" type="textarea" :disabled="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="培训心得" label-width="100px" prop="reportContent">
+                        <el-input v-model="selectTable.reportContent" type="textarea" :disabled="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="附件" label-width="100px" prop="reportContent">
+                        <a v-if="selectTable.fileName !== ''" type="primary" :href="selectTable.fileUrl" :download="selectTable.fileName">{{selectTable.fileName}}</a>
+                        <span v-if="selectTable.fileName === null">无</span>
+                    </el-form-item>
+                    <el-form-item label="审批状态" label-width="100px" prop="reportContent">
+                        <el-input v-model="selectTable.auditStatus" :disabled="true"></el-input>
+                    </el-form-item>
+                    <el-form-item v-if="selectTable.auditStatus === '已通过' || selectTable.auditStatus === '未通过'" label="审批意见" label-width="100px" prop="reportContent">
+                        <el-input v-model="selectTable.auditRemark" :disabled="true"></el-input>
                     </el-form-item>
                 </el-form>
             </el-dialog>
@@ -95,6 +118,8 @@
 </template>
 
 <script>
+    import {log} from "nightwatch/lib/util/logger";
+
     const demoLearnData = [
         {
             "name": "创新教育理念研讨会",
@@ -261,7 +286,6 @@
         methods: {
             async initData() {
                 await this.getTrainingList();
-                this.count = demoLearnData.length;
             },
             async getTrainingList() {
                 const res = await postMethod('/core/training/list/user',  JSON.stringify({
@@ -290,16 +314,13 @@
                     });
                 }
             },
-            async getLearns(){
-                this.tableData = demoLearnData.slice(this.offset, this.offset + this.limit);
-            },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
             },
             handleCurrentChange(val) {
                 this.currentPage = val;
-                this.offset = (val - 1)*this.limit;
-                this.getLearns()
+                this.offset = (val - 1) * this.limit;
+                this.getTrainingList()
             },
             handleEdit(row) {
                 // console.log(row)
@@ -356,6 +377,53 @@
                         });
                     }
                 }).catch();
+            },
+            handleCancelReport(row) {
+                this.$confirm("确定要撤销此次学习汇报？", "提示", {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    showCancelButton: true,
+                    showClose: false,
+                    closeOnClickModal: false
+                }).then(async () => {
+                    const res = await postMethod('/core/trainingAudit/cancel', JSON.stringify(
+                        {
+                            id: row.trainingId,
+                        })
+                    );
+                    if (res.data.code === 200) {
+                        this.$message({
+                            type: 'success',
+                            message: '撤销学习报告成功',
+                        });
+                        await this.getTrainingList();
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: res.data.msg,
+                        });
+                    }
+                }).catch();
+            },
+            async handleReportInfo(row) {
+                const res = await postMethod('/core/trainingAudit/info', JSON.stringify(
+                    {
+                        id: row.trainingId,
+                    })
+                );
+
+                this.finishFormVisible = true;
+                if (res.data.code === 200) {
+                    console.log(res.data.data);
+                    this.selectTable = res.data.data;
+                    this.selectTable.reportContent = this.selectTable.content;
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.data.msg,
+                    });
+                }
             },
             handleCancleJoin(row) {
                 row.status = "待报名";
@@ -480,8 +548,9 @@
                 });
             },
             handleFileUploadSuccess(response, file, fileList) {
-                if (response.data.code === 200) {
-                    this.selectTable.fileId = response.data.data.fileId;
+                console.log(response)
+                if (response.code === 200) {
+                    this.selectTable.fileId = response.data.fileId;
                 }
             },
             handleFileRemove(file, fileList) {

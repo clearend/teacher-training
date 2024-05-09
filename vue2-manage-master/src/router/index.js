@@ -66,7 +66,7 @@ const routes = [
         },{
             path: '/adminList',
             component: adminList,
-            meta: ['数据管理', '管理员列表'],
+            meta: ['数据管理', '培训结果审批列表'],
         },{
             path: '/visitor',
             component: visitor,

@@ -13,16 +13,10 @@ public class ExamineRequest {
     @Schema(description = "培训审核id")
     private String trainingAuditId;
 
-    @Schema(description = "审核状态")
-    private AuditEnum auditStatus;
+    @Schema(description = "审核结果")
+    private Integer auditResult;
 
-    @Schema(description = "审核时间")
-    private LocalDateTime auditTime;
-
-    @Schema(description = "审核备注")
+    @Schema(description = "审核意见")
     private String auditRemark;
 
-    @Schema(description = "是否删除")
-    @TableLogic
-    private Integer isDel;
 }

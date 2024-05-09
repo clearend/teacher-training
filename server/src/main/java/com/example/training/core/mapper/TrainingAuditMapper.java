@@ -4,6 +4,7 @@ import com.example.training.core.entity.TrainingAudit;
 import com.example.training.core.entity.request.ExamineRequest;
 import com.example.training.core.entity.request.UploadLearnRecordRequest;
 import com.github.yulichang.base.MPJBaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -15,7 +16,7 @@ import com.github.yulichang.base.MPJBaseMapper;
  */
 public interface TrainingAuditMapper extends MPJBaseMapper<TrainingAudit> {
 
-    void examineTraining(ExamineRequest examineRequest);
+    void examineTraining(@Param("param") ExamineRequest examineRequest);
 
     void uploadLearnRecord(UploadLearnRecordRequest request);
 }

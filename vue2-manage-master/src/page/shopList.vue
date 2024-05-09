@@ -129,7 +129,7 @@
 
                     <el-select v-model="selectedTeachers" multiple placeholder="请选择">
                         <el-option
-                            v-for="item in teacherList"
+                            v-for="item in teacherList" :key="item.userId"
                                 :label="item.userName + ' ' + item.jobId"
                                 :value="item.userId">
                         </el-option>

@@ -2,8 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.training.core.mapper.TrainingAuditMapper">
  <select id="examineTraining" >
-     update training_audit set audit_status=#{auditStatus},audit_time=now(),audit_remark=#{auditRemark}
-                             ,is_del=#{isDel},update_time=now() where training_audit_id=#{trainingAuditId}
+    update training_audit
+    set audit_time=now(), audit_remark=#{param.auditRemark}, audit_status=#{param.auditResult}
+    where training_audit_id=#{param.trainingAuditId}
 
  </select>
 
