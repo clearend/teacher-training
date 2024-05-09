@@ -335,6 +335,7 @@
                             });
 
                             this.addDialogFormVisible = false;
+                            await this.getTrainingList()
                         } else {
                             this.$message({
                                 type: 'error',

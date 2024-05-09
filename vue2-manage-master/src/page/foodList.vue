@@ -15,7 +15,7 @@
                 <el-form-item label="素材文件" label-width="100px" prop="fileId">
                     <el-upload
                             class="upload-demo"
-                            action="http://localhost:8901/core/sysFile/upload"
+                            action="http://114.116.252.42/server/core/sysFile/upload"
                             :on-success="handleFileUploadSuccess"
                             :on-remove="handleFileRemove">
                         <el-button size="small" type="primary">点击上传</el-button>
@@ -186,6 +186,7 @@
                             });
 
                             this.addDialogFormVisible = false;
+                            await this.getMaterialList();
                         }
                     } else {
                         this.$message({
