@@ -3,7 +3,7 @@
         <head-top></head-top>
         <header class="admin_title">个人信息</header>
         <div class="admin_set">
-            <el-row >
+            <el-row>
                 <div style="text-align: end; margin-bottom: 10px;">
                     <el-button v-if="editing" type="primary" @click="handleEdit">编 辑</el-button>
                     <el-button v-if="!editing" type="success" @click="handleSave">保 存</el-button>
