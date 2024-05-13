@@ -57,7 +57,23 @@
         <if test="param.queryUserId != null and param.queryUserId != ''">
             and t2.user_id = #{param.queryUserId}
         </if>
-        where t1.is_del = 0
+        where
+            t1.is_del = '0'
+            <if test="param.trainingName != null and param.trainingName != ''">
+                and t1.training_name like concat('%', #{param.trainingName}, '%')
+            </if>
+            <if test="param.trainingAddress != null and param.trainingAddress != ''">
+                and t1.training_address like concat('%', #{param.trainingAddress}, '%')
+            </if>
+            <if test="param.trainingType != null">
+                and t1.training_type = #{param.trainingType}
+            </if>
+            <if test="param.startDate">
+                and t1.training_time &gt;= #{param.startDate}
+            </if>
+            <if test="param.endDate">
+                and t1.training_time &lt;= #{param.endDate}
+            </if>
         <if test="param != null and param.offset != null">
             limit #{param.limit} offset #{param.offset}
         </if>
