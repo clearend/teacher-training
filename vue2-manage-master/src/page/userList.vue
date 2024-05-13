@@ -6,8 +6,10 @@
                 <el-row :gutter="10">
                     <el-col :span="4"><el-input v-model="tableFilter.userName" placeholder="用户姓名"></el-input></el-col>
                     <el-col :span="4"><el-input v-model="tableFilter.jobId" placeholder="工号"></el-input></el-col>
-                    <el-col :span="1"><el-button type="primary" @click="handleFilterQuery">查 询</el-button></el-col>
-                    <el-col :span="1"><el-button type="warning" @click="handleFilterClear">清 空</el-button></el-col>
+                    <el-col :span="4">
+                        <el-button type="primary" @click="handleFilterQuery">查 询</el-button>
+                        <el-button type="warning" @click="handleFilterClear">清 空</el-button>
+                    </el-col>
                 </el-row>
             </el-col>
             <el-col :span="4">

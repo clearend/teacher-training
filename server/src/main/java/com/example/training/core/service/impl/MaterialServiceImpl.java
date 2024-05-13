@@ -57,6 +57,13 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         wrapper.leftJoin(User.class, User::getUserId, Material::getUserId)
                 .leftJoin(SysFile.class, SysFile::getFileId, Material::getFileId)
                 .eq(Material::getFileStatus, FileStatusEnum.PUBLISHED.getCode());
+        if (Objects.nonNull(materialListRequest.getMaterialType())) {
+            wrapper.eq(Material::getMaterialType, MaterialTypeEnum.getByCode(materialListRequest.getMaterialType()));
+        }
+        if (Objects.nonNull(materialListRequest.getMaterialName()) && !materialListRequest.getMaterialName().isEmpty()) {
+            wrapper.like(Material::getMaterialName, materialListRequest.getMaterialName());
+        }
+
         materialListVO.setCount(materialMapper.selectCount(wrapper));
 
         wrapper.select(Material::getMaterialId, Material::getMaterialName, Material::getMaterialType, Material::getFileStatus)
