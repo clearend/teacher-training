@@ -26,14 +26,6 @@
                     </el-col>
                 </el-row>
             </el-col>
-            <el-col :span="4">
-                <div style="text-align: right; padding-right: 40px;">
-                    <el-button
-                            type="success"
-                            style="padding-left: 10px; padding-right: 10px;"
-                            @click="handleAdd">添 加</el-button>
-                </div>
-            </el-col>
         </el-row>
 
         <div class="table_container"  style="padding-top: 10px;">
@@ -101,7 +93,7 @@
                     <el-form-item label="附件" label-width="100px" prop="fileId">
                         <el-upload
                                 class="upload-demo"
-                                action="http://114.116.252.42/server/core/sysFile/upload"
+                                :action="uploadUrl"
                                 :on-success="handleFileUploadSuccess"
                                 :on-remove="handleFileRemove">
                             <el-button size="small" type="primary">点击上传</el-button>
@@ -154,10 +146,11 @@
 <script>
 import headTop from '../components/headTop'
 import {postMethod} from "@/api/getDataLocal";
+import {uploadUrl} from "@/config/env";
 export default {
     data() {
         return {
-            city: {},
+            uploadUrl: uploadUrl,
             offset: 0,
             limit: 15,
             count: 0,
@@ -165,10 +158,6 @@ export default {
             currentPage: 1,
             selectTable: {},
             dialogFormVisible: false,
-            categoryOptions: [],
-            selectedCategory: [],
-            address: {},
-            addDialogFormVisible: false,
             newTable: {},
             finishFormVisible: false,
             tableFilter: {
@@ -384,33 +373,6 @@ export default {
                     }
                 }
             })
-        },
-        updateLearn() {
-            this.dialogFormVisible = false;
-            try{
-                if (1) {
-                    this.$message({
-                        type: 'success',
-                        message: '更新培训信息成功'
-                    });
-                    // this.getResturants();
-                }else{
-                    this.$message({
-                        type: 'error',
-                        message: res.message
-                    });
-                }
-            }catch(err){
-                console.log('更新培训信息失败', err);
-            }
-        },
-        handleAdd() {
-            this.newTable = {
-                "name": "",
-                "location": "",
-                "description": "",
-            };
-            this.addDialogFormVisible = true;
         },
         handleFileUploadSuccess(response, file, fileList) {
             console.log(response)

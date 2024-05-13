@@ -2,6 +2,27 @@
     <div class="fillcontain">
         <head-top></head-top>
 
+        <el-row style="padding-top: 10px; padding-left: 20px;">
+            <el-col :span="20">
+                <el-row :gutter="10">
+                    <el-col :span="4"><el-input v-model="tableFilter.materialName" placeholder="素材名称"></el-input></el-col>
+                    <el-col :span="3">
+                        <el-select v-model="tableFilter.materialType" placeholder="素材类型">
+                            <el-option label="文档" value="0"></el-option>
+                            <el-option label="图片" value="1"></el-option>
+                            <el-option label="视频" value="2"></el-option>
+                            <el-option label="音频" value="3"></el-option>
+                            <el-option label="其他" value="4"></el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-button type="info" @click="handleFilterQuery">查 询</el-button>
+                        <el-button type="warning" @click="handleFilterClear">清 空</el-button>
+                    </el-col>
+                </el-row>
+            </el-col>
+        </el-row>
+
         <div class="table_container" style="padding-top: 10px;">
             <el-table
                 :data="tableData"
@@ -50,6 +71,10 @@
                 currentPage: 1,
                 addDialogFormVisible: false,
                 newTable: {},
+                tableFilter: {
+                    materialName: "",
+                    materialType: "",
+                },
                 rules: {
                     fileId: [{required: true, message: "请上传素材文件", trigger: 'blur'}],
                     materialName: [{required: true, message: "请输入素材名称", trigger: 'blur'}],
@@ -65,14 +90,17 @@
     	},
         methods: {
             async getMaterialList() {
-                const res = await postMethod('/core/material/list', JSON.stringify(
-                    {
-                        pageRequest: {
-                            currentPage: this.currentPage,
-                            pageSize: this.limit,
-                        }
-                    }
-                ));
+                const pageRequest = {
+                    currentPage: this.currentPage,
+                    pageSize: this.limit,
+                };
+                const query = {
+                    materialName: this.tableFilter.materialName,
+                    materialType: this.tableFilter.materialType,
+                    pageRequest: pageRequest,
+                };
+
+                const res = await postMethod('/core/material/list', JSON.stringify(query));
 
                 if (res.data.code === 200) {
                     this.tableData = res.data.data.materialList;
@@ -94,6 +122,18 @@
                 this.currentPage = val;
                 this.offset = (val - 1) * this.limit;
                 this.getMaterialList();
+            },
+            async handleFilterQuery() {
+                this.currentPage = 1;
+                await this.getMaterialList();
+            },
+            async handleFilterClear() {
+                this.tableFilter = {
+                    materialName: "",
+                    materialType: "",
+                };
+                this.currentPage = 1;
+                await this.getMaterialList();
             },
             handleDelete(row) {
                 this.$confirm("确定要删除该素材？", "提示", {
