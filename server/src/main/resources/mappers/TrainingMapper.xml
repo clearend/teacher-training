@@ -27,7 +27,23 @@
             SUM(IF(t2.user_id = #{param.queryUserId}, 1, 0)) > 0 AS is_participate
         from training t1
         left join training_user t2 on t1.training_id = t2.training_id
-        where t1.is_del = '0'
+        where
+            t1.is_del = '0'
+            <if test="param.trainingName != null and param.trainingName != ''">
+                and t1.training_name like concat('%', #{param.trainingName}, '%')
+            </if>
+            <if test="param.trainingAddress != null and param.trainingAddress != ''">
+                and t1.training_address like concat('%', #{param.trainingAddress}, '%')
+            </if>
+            <if test="param.trainingType != null">
+                and t1.training_type = #{param.trainingType}
+            </if>
+            <if test="param.startDate">
+                and t1.training_time &gt;= #{param.startDate}
+            </if>
+            <if test="param.endDate">
+                and t1.training_time &lt;= #{param.endDate}
+            </if>
         group by t1.training_id
         <if test="param != null and param.offset != null">
             limit #{param.limit} offset #{param.offset}

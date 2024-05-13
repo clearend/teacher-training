@@ -68,10 +68,34 @@ public class TrainingServiceImpl extends ServiceImpl<TrainingMapper, Training> i
         Integer pageSize = trainingListRequest.getPageRequest().getPageSize();
         Integer offset = (currentPage - 1) * pageSize;
 
+        TrainingListDTO trainingListDTO = new TrainingListDTO();
         LambdaQueryWrapper<Training> countWrapper = new LambdaQueryWrapper<>();
+
+        if (trainingListRequest.getTrainingType() != null && trainingListRequest.getTrainingType() != 0) {
+            countWrapper.eq(Training::getTrainingType, TrainTypeEnum.getByCode(trainingListRequest.getTrainingType()));
+            trainingListDTO.setTrainingType(trainingListRequest.getTrainingType());
+        }
+        if (trainingListRequest.getTrainingName() != null && !trainingListRequest.getTrainingName().isEmpty()) {
+            countWrapper.like(Training::getTrainingName, trainingListRequest.getTrainingName());
+            trainingListDTO.setTrainingName(trainingListRequest.getTrainingName());
+        }
+        if (trainingListRequest.getTrainingAddress() != null && !trainingListRequest.getTrainingAddress().isEmpty()) {
+            countWrapper.like(Training::getTrainingAddress, trainingListRequest.getTrainingAddress());
+            trainingListDTO.setTrainingAddress(trainingListRequest.getTrainingAddress());
+        }
+        if (trainingListRequest.getStartDate() != null && !trainingListRequest.getStartDate().isEmpty()) {
+            Date startDate = new Date(Long.parseLong(trainingListRequest.getStartDate()));
+            countWrapper.ge(Training::getTrainingTime, startDate);
+            trainingListDTO.setStartDate(startDate);
+        }
+        if (trainingListRequest.getEndDate() != null && !trainingListRequest.getEndDate().isEmpty()) {
+            Date endDate = new Date(Long.parseLong(trainingListRequest.getEndDate()));
+            countWrapper.le(Training::getTrainingTime, endDate);
+            trainingListDTO.setEndDate(endDate);
+        }
+
         Long count = trainingMapper.selectCount(countWrapper);
 
-        TrainingListDTO trainingListDTO = new TrainingListDTO();
         trainingListDTO.setOffset(offset);
         trainingListDTO.setLimit(pageSize);
         trainingListDTO.setQueryUserId(user.getUserId());
