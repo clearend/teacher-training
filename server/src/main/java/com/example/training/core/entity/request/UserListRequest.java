@@ -6,5 +6,9 @@ import lombok.Data;
 @Data
 @Schema(description = "用户列表请求参数")
 public class UserListRequest {
+    private String userName;
+
+    private String jobId;
+
     private PageRequest pageRequest;
 }

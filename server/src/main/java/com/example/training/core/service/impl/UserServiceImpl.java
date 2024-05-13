@@ -57,16 +57,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public UserListVO getUserList(UserListRequest userListRequest) {
-        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<User>();
         Integer currentPage = userListRequest.getPageRequest().getCurrentPage();
         Integer pageSize = userListRequest.getPageRequest().getPageSize();
 
-        Long count = userMapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getRole, RoleEnum.USER));
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<User>();
+        wrapper.eq(User::getRole, RoleEnum.USER);
+
+        if (userListRequest.getJobId() != null && !userListRequest.getJobId().isEmpty()) {
+            wrapper.like(User::getJobId, userListRequest.getJobId());
+        }
+        if (userListRequest.getUserName() != null && !userListRequest.getUserName().isEmpty()) {
+            wrapper.like(User::getUserName, userListRequest.getUserName());
+        }
+
+        Long count = userMapper.selectCount(wrapper);
 
         wrapper.select(User::getUserId, User::getUserName, User::getJobId, User::getGender, User::getEmail, User::getPhone, User::getRole)
-                .eq(User::getRole, RoleEnum.USER)
                 .last("limit " + pageSize + " offset " + ((currentPage - 1) * pageSize));
-
         List<User> userList = userMapper.selectList(wrapper);
 
         UserListVO userListVO = new UserListVO();

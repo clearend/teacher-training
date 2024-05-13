@@ -35,12 +35,14 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile> impl
     @Resource
     private SysFileMapper sysFileMapper;
 
-    private static final String DOMAIN = "http://localhost:8901/files/";
+    private static final String DOMAIN = "http://114.116.252.42/server/files/";
+
+    private static final String basePath = "/root/files/";
 
     @Override
     public ResultResponse<SysFileVO> upload(MultipartFile file) {
-        ApplicationHome applicationHome = new ApplicationHome(this.getClass());
-        String basePath = applicationHome.getDir().getParentFile().getParentFile().getAbsolutePath() + "/src/main/resources/static/files/";
+//        ApplicationHome applicationHome = new ApplicationHome(this.getClass());
+//        String basePath = applicationHome.getDir().getParentFile().getParentFile().getAbsolutePath() + "/src/main/resources/static/files/";
         String originalFileName = file.getOriginalFilename();
         String fileName = IdUtil.fastSimpleUUID() + "-" + file.getOriginalFilename();
 

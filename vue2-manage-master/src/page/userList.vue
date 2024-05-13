@@ -1,42 +1,24 @@
 <template>
     <div class="fillcontain">
         <head-top></head-top>
-        <div style="text-align: right; padding-right: 40px; margin-top: 10px;">
-            <el-button
-                size="small"
-                type="success"
-                style="padding-left: 10px; padding-right: 10px;"
-                @click="handleAdd">添加</el-button>
-        </div>
-
-        <el-dialog title="新增用户信息" v-model="addDialogFormVisible">
-            <el-form :model="newTable" :rules="rules" ref="addUserForm">
-                <el-form-item label="用户姓名" label-width="100px" prop="userName">
-                    <el-input v-model="newTable.userName" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="工号" label-width="100px" prop="jobId">
-                    <el-input v-model="newTable.jobId"></el-input>
-                </el-form-item>
-                <el-form-item label="性别" label-width="100px" prop="gender">
-                    <el-select v-model="newTable.gender" placeholder="请选择性别">
-                        <el-option label="未知" value="0"></el-option>
-                        <el-option label="男" value="1"></el-option>
-                        <el-option label="女" value="2"></el-option>
-                    </el-select>
-<!--                    <el-input v-model="newTable.registeDate"></el-input>-->
-                </el-form-item>
-                <el-form-item label="电话" label-width="100px" prop="phone">
-                    <el-input v-model="newTable.phone"></el-input>
-                </el-form-item>
-                <el-form-item label="电子邮箱" label-width="100px" prop="email">
-                    <el-input v-model="newTable.email"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="addDialogFormVisible=false">取 消</el-button>
-                <el-button type="primary" @click="addUser">确 定</el-button>
-            </div>
-        </el-dialog>
+        <el-row style="padding-top: 10px; padding-left: 20px;">
+            <el-col :span="20">
+                <el-row :gutter="10">
+                    <el-col :span="4"><el-input v-model="tableFilter.userName" placeholder="用户姓名"></el-input></el-col>
+                    <el-col :span="4"><el-input v-model="tableFilter.jobId" placeholder="工号"></el-input></el-col>
+                    <el-col :span="1"><el-button type="primary" @click="handleFilterQuery">查 询</el-button></el-col>
+                    <el-col :span="1"><el-button type="warning" @click="handleFilterClear">清 空</el-button></el-col>
+                </el-row>
+            </el-col>
+            <el-col :span="4">
+                <div style="text-align: right; padding-right: 40px;">
+                    <el-button
+                            type="success"
+                            style="padding-left: 10px; padding-right: 10px;"
+                            @click="handleAdd">添 加</el-button>
+                </div>
+            </el-col>
+        </el-row>
 
         <div class="table_container" style="padding-top: 10px;">
             <el-table
@@ -66,38 +48,67 @@
                     :total="count">
                 </el-pagination>
             </div>
-
-            <el-dialog title="修改用户信息" v-model="dialogFormVisible">
-                <el-form :model="selectTable" ref="updateUserForm" :rules="rules">
-                    <el-form-item label="用户姓名" label-width="100px" prop="userName">
-                        <el-input v-model="selectTable.userName" auto-complete="off"></el-input>
-                    </el-form-item>
-                    <el-form-item label="工号" label-width="100px" prop="jobId">
-                        <el-input v-model.number="selectTable.jobId"></el-input>
-                    </el-form-item>
-                    <el-form-item label="密码" label-width="100px" prop="password">
-                        <el-input v-model="selectTable.password" type="password"></el-input>
-                    </el-form-item>
-                    <el-form-item label="性别" label-width="100px" prop="gender">
-                        <el-select v-model="selectTable.gender" placeholder="请选择性别">
-                            <el-option label="未知" value="0"></el-option>
-                            <el-option label="男" value="1"></el-option>
-                            <el-option label="女" value="2"></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="电话" label-width="100px" prop="phone">
-                        <el-input v-model="selectTable.phone"></el-input>
-                    </el-form-item>
-                    <el-form-item label="电子邮箱" label-width="100px" prop="email">
-                        <el-input v-model="selectTable.email"></el-input>
-                    </el-form-item>
-                </el-form>
-                <div slot="footer" class="dialog-footer">
-                    <el-button @click="dialogFormVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="updateUser">确 定</el-button>
-                </div>
-            </el-dialog>
         </div>
+
+        <el-dialog title="新增用户信息" v-model="addDialogFormVisible">
+            <el-form :model="newTable" :rules="rules" ref="addUserForm">
+                <el-form-item label="用户姓名" label-width="100px" prop="userName">
+                    <el-input v-model="newTable.userName" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="工号" label-width="100px" prop="jobId">
+                    <el-input v-model="newTable.jobId"></el-input>
+                </el-form-item>
+                <el-form-item label="性别" label-width="100px" prop="gender">
+                    <el-select v-model="newTable.gender" placeholder="请选择性别">
+                        <el-option label="未知" value="0"></el-option>
+                        <el-option label="男" value="1"></el-option>
+                        <el-option label="女" value="2"></el-option>
+                    </el-select>
+                    <!--                    <el-input v-model="newTable.registeDate"></el-input>-->
+                </el-form-item>
+                <el-form-item label="电话" label-width="100px" prop="phone">
+                    <el-input v-model="newTable.phone"></el-input>
+                </el-form-item>
+                <el-form-item label="电子邮箱" label-width="100px" prop="email">
+                    <el-input v-model="newTable.email"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="addDialogFormVisible=false">取 消</el-button>
+                <el-button type="primary" @click="addUser">确 定</el-button>
+            </div>
+        </el-dialog>
+
+        <el-dialog title="修改用户信息" v-model="dialogFormVisible">
+            <el-form :model="selectTable" ref="updateUserForm" :rules="rules">
+                <el-form-item label="用户姓名" label-width="100px" prop="userName">
+                    <el-input v-model="selectTable.userName" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="工号" label-width="100px" prop="jobId">
+                    <el-input v-model.number="selectTable.jobId"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" label-width="100px" prop="password">
+                    <el-input v-model="selectTable.password" type="password"></el-input>
+                </el-form-item>
+                <el-form-item label="性别" label-width="100px" prop="gender">
+                    <el-select v-model="selectTable.gender" placeholder="请选择性别">
+                        <el-option label="未知" value="0"></el-option>
+                        <el-option label="男" value="1"></el-option>
+                        <el-option label="女" value="2"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="电话" label-width="100px" prop="phone">
+                    <el-input v-model="selectTable.phone"></el-input>
+                </el-form-item>
+                <el-form-item label="电子邮箱" label-width="100px" prop="email">
+                    <el-input v-model="selectTable.email"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">取 消</el-button>
+                <el-button type="primary" @click="updateUser">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -109,15 +120,18 @@ export default {
     data() {
         return {
             tableData: [],
-            currentRow: null,
             offset: 0,
             limit: 15,
             count: 0,
             currentPage: 1,
             addDialogFormVisible: false,
+            dialogFormVisible: false,
             newTable: {},
             selectTable: {},
-            dialogFormVisible: false,
+            tableFilter: {
+                userName: "",
+                jobId: "",
+            },
             rules: {
                 userName: [{required: true, message: '请输入姓名', trigger: 'blur'}],
                 jobId: [{required: true, message: '请输入正确的工号', trigger: 'blur'}],
@@ -171,7 +185,6 @@ export default {
         },
         async handleEdit(row) {
             this.selectTable = await this.userInfo(row.userId);
-            console.log(this.selectTable)
             this.dialogFormVisible = true;
         },
         async handleDelete(row) {
@@ -190,6 +203,7 @@ export default {
                             message: '删除用户成功'
                         });
 
+                        this.currentPage = 1;
                         await this.getUsers();
                     } else {
                         this.$message({
@@ -197,8 +211,19 @@ export default {
                             message: res.data.msg
                         });
                     }
-            }).catch(() => {
-            });
+            }).catch(() => {});
+        },
+        async handleFilterQuery() {
+          this.currentPage = 1;
+          await this.getUsers();
+        },
+        async handleFilterClear() {
+            this.tableFilter = {
+                userName: "",
+                jobId: "",
+            }
+            this.currentPage = 1;
+            await this.getUsers();
         },
         addUser() {
             this.$refs.addUserForm.validate(async valid => {
@@ -224,12 +249,17 @@ export default {
 
         },
         async getUsers() {
-            const res = await getUserList({
-                "pageRequest": {
-                    "currentPage": this.currentPage,
-                    "pageSize": this.limit,
-                }
-            });
+            const pageRequest = {
+                "currentPage": this.currentPage,
+                "pageSize": this.limit,
+            }
+            const query = {
+                "pageRequest": pageRequest,
+                "userName": this.tableFilter.userName,
+                "jobId": this.tableFilter.jobId,
+            }
+
+            const res = await getUserList(JSON.stringify(query));
 
             if (res.data.code === 200) {
                 this.tableData = res.data.data.userList;
@@ -291,5 +321,8 @@ export default {
 @import '../style/mixin';
 .table_container{
     padding: 20px;
+}
+.filter-input{
+    width: 200px;
 }
 </style>
