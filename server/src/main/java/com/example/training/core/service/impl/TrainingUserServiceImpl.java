@@ -11,6 +11,7 @@ import com.example.training.core.entity.Training;
 import com.example.training.core.entity.TrainingUser;
 import com.example.training.core.entity.User;
 import com.example.training.core.entity.enums.RoleEnum;
+import com.example.training.core.entity.excels.UserTrainingExcel;
 import com.example.training.core.entity.request.AddPersonRequest;
 import com.example.training.core.entity.request.CreateTrainingRequest;
 import com.example.training.core.entity.request.DeleteTrainingUserRequest;
@@ -139,5 +140,10 @@ public class TrainingUserServiceImpl extends ServiceImpl<TrainingUserMapper, Tra
         }
 
         trainingUserMapper.deleteById(trainingUser.getId());
+    }
+
+    @Override
+    public List<UserTrainingExcel> export() {
+        return trainingUserMapper.selectTrainingExcels();
     }
 }

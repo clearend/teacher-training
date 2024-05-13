@@ -1,19 +1,22 @@
 package com.example.training.core.controller;
 
+import com.alibaba.excel.EasyExcel;
 import com.example.training.common.ResultResponse;
 import com.example.training.common.annotations.PermissionAccess;
 import com.example.training.core.entity.User;
+import com.example.training.core.entity.excels.UserTrainingExcel;
 import com.example.training.core.entity.request.AddPersonRequest;
-import com.example.training.core.entity.request.CreateTrainingRequest;
 import com.example.training.core.entity.request.DeleteTrainingUserRequest;
-import com.example.training.core.service.ITrainingService;
 import com.example.training.core.service.ITrainingUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.stereotype.Controller;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -69,5 +72,16 @@ public class TrainingUserController {
         return ResultResponse.success("success");
     }
 
+    @GetMapping("/export")
+    @Operation(summary = "导出用户培训记录")
+    public void export(HttpServletResponse response) throws IOException {
+        List<UserTrainingExcel> excels = iTrainingUserService.export();
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        String fileName = URLEncoder.encode("教师培训报表", "UTF-8").replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), UserTrainingExcel.class).sheet("Sheet1").doWrite(excels);
+    }
 
 }

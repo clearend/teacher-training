@@ -3,6 +3,7 @@ package com.example.training.core.service;
 import com.example.training.core.entity.TrainingUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.training.core.entity.User;
+import com.example.training.core.entity.excels.UserTrainingExcel;
 import com.example.training.core.entity.request.AddPersonRequest;
 import com.example.training.core.entity.request.CreateTrainingRequest;
 import com.example.training.core.entity.request.DeleteTrainingUserRequest;
@@ -26,4 +27,6 @@ public interface ITrainingUserService extends IService<TrainingUser> {
     void cancelSignUp(AddPersonRequest addPersonRequest, User user);
 
     void deletePerson(DeleteTrainingUserRequest addPersonRequest, User user);
+
+    List<UserTrainingExcel> export();
 }

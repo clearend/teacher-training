@@ -3,6 +3,7 @@ package com.example.training.core.mapper;
 import com.example.training.core.entity.TrainingUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.training.core.entity.User;
+import com.example.training.core.entity.excels.UserTrainingExcel;
 import com.example.training.core.entity.request.AddPersonRequest;
 import com.github.yulichang.base.MPJBaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -28,4 +29,6 @@ public interface TrainingUserMapper extends MPJBaseMapper<TrainingUser> {
     void deletePerson(@Param("trainingId") String trainingId, @Param("user") User user1, @Param("create_id") String userId);
 
     void updatePerson(@Param("trainingId") String trainingId, @Param("userId") String userId);
+
+    List<UserTrainingExcel> selectTrainingExcels();
 }

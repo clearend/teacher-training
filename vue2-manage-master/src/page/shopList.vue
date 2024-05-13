@@ -20,9 +20,10 @@
                     <el-col :span="3">
                         <el-date-picker v-model="tableFilter.endDate" type="date" placeholder="结束日期" style="width: 100%;"></el-date-picker>
                     </el-col>
-                    <el-col :span="4">
+                    <el-col :span="6">
                         <el-button type="primary" @click="handleFilterQuery">查 询</el-button>
                         <el-button type="warning" @click="handleFilterClear">清 空</el-button>
+                        <el-button type="success" @click="handleExport">导出报表</el-button>
                     </el-col>
                 </el-row>
             </el-col>
@@ -457,8 +458,11 @@
                 }
 
                 this.specsFormVisible = true;
-            }
-        },
+            },
+            handleExport() {
+                window.open("http://localhost:8901/core/trainingUser/export");
+            },
+        }
     }
 </script>
 
