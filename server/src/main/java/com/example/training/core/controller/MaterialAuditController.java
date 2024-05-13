@@ -33,8 +33,11 @@ public class MaterialAuditController {
     @PermissionAccess
     @PostMapping("/list")
     @Operation(summary = "获取素材审批列表")
-    public ResultResponse<MaterialAuditListVO> getMaterialAuditList(@RequestBody MaterialAuditListRequest materialAuditListRequest) {
-        return ResultResponse.success(materialAuditService.getMaterialAuditList(materialAuditListRequest));
+    public ResultResponse<MaterialAuditListVO> getMaterialAuditList(
+            @RequestBody MaterialAuditListRequest materialAuditListRequest,
+            @RequestAttribute("user") User user
+    ) {
+        return ResultResponse.success(materialAuditService.getMaterialAuditList(materialAuditListRequest, user));
     }
 
     @PermissionAccess

@@ -15,35 +15,88 @@
                     <el-form-item>
                         <el-button type="primary" @click="submitForm('loginForm')" class="submit_btn">登录</el-button>
                     </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="registerDialogFormVisible=true" class="submit_btn">注册</el-button>
+                    </el-form-item>
                 </el-form>
-                <p class="tip">温馨提示：</p>
-                <p class="tip">未登录过的新用户，自动注册</p>
-                <p class="tip">注册过的用户可凭账号密码登录</p>
             </section>
         </transition>
+
+        <el-dialog title="用户注册" v-model="registerDialogFormVisible">
+            <el-form :model="registerTable" :rules="rules" ref="registerForm">
+                <el-form-item label="用户姓名" label-width="100px" prop="userName">
+                    <el-input v-model="registerTable.userName" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="工号" label-width="100px" prop="jobId">
+                    <el-input v-model="registerTable.jobId"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" label-width="100px" prop="password">
+                    <el-input type="password" v-model="registerTable.password"></el-input>
+                </el-form-item>
+                <el-form-item label="确认密码" label-width="100px" prop="confirmPassword">
+                    <el-input type="password" v-model="registerTable.confirmPassword"></el-input>
+                </el-form-item>
+                <el-form-item label="性别" label-width="100px" prop="gender">
+                    <el-select v-model="registerTable.gender" placeholder="请选择性别">
+                        <el-option label="未知" value="0"></el-option>
+                        <el-option label="男" value="1"></el-option>
+                        <el-option label="女" value="2"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="电话" label-width="100px" prop="phone">
+                    <el-input v-model="registerTable.phone"></el-input>
+                </el-form-item>
+                <el-form-item label="电子邮箱" label-width="100px" prop="email">
+                    <el-input v-model="registerTable.email"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="handleCancel">取 消</el-button>
+                <el-button type="primary" @click="addUser">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
 import {etAdminInfo} from '@/api/getData'
-import {login} from "@/api/getDataLocal";
+import {login, postMethod} from "@/api/getDataLocal";
 // import axios from "axios"
 import {mapActions, mapState} from 'vuex'
 
 export default {
     data(){
+        var validatePass2 = (rule, value, callback) => {
+            if (value === '') {
+                callback(new Error('请再次输入密码'));
+            } else if (value !== this.registerTable.password) {
+                callback(new Error('两次输入密码不一致!'));
+            } else {
+                callback();
+            }
+        };
         return {
+            registerTable: {},
+            registerDialogFormVisible: false,
             loginForm: {
                 username: '',
                 password: '',
             },
             rules: {
-                username: [
-                    { required: true, message: '请输入用户名', trigger: 'blur' },
+                username: [{ required: true, message: '请输入用户名', trigger: 'blur' },],
+                password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+                confirmPassword: [{ required: true, validator: validatePass2, trigger: 'blur' }],
+                userName: [{ required: true, message: '请输入姓名', trigger: 'blur' },],
+                jobId: [{ required: true, message: '请输入工号', trigger: 'blur' },],
+                gender: [{required: true, message: '请选择性别', trigger: 'blur'},],
+                phone: [
+                    {required: true, message: '请输入手机号码', trigger: 'blur'},
+                    {pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号码", trigger: "blur"}
                 ],
-                password: [
-                    { required: true, message: '请输入密码', trigger: 'blur' }
-                ],
+                email: [
+                    {required: true, message: '请输入电子邮箱', trigger: 'blur'},
+                    {pattern: /^\w{1,64}@[a-z0-9\-]{1,256}(\.[a-z]{2,6}){1,2}$/, message: "请输入正确的电子邮箱", trigger: "blur"}
+                ]
             },
             showLogin: false,
         }
@@ -91,6 +144,30 @@ export default {
                         offset: 100
                     });
                     return false;
+                }
+            });
+        },
+        handleCancel() {
+            this.registerTable = {};
+            this.registerDialogFormVisible = false;
+        },
+        addUser() {
+            this.$refs.registerForm.validate(async valid => {
+                if (valid) {
+                    const res = await postMethod('/core/user/upsert', this.registerTable);
+                    if (res.data.code === 200) {
+                        this.$message({
+                            type: 'success',
+                            message: '注册成功，请登录',
+                        });
+
+                        this.registerDialogFormVisible = false;
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: res.data.msg,
+                        });
+                    }
                 }
             });
         },

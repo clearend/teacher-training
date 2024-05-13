@@ -15,7 +15,7 @@
                 <el-form-item label="素材文件" label-width="100px" prop="fileId">
                     <el-upload
                             class="upload-demo"
-                            action="http://114.116.252.42/server/core/sysFile/upload"
+                            :action="uploadUrl"
                             :on-success="handleFileUploadSuccess"
                             :on-remove="handleFileRemove">
                         <el-button size="small" type="primary">点击上传</el-button>
@@ -122,9 +122,11 @@
 
     import headTop from '../components/headTop'
     import {postMethod} from "@/api/getDataLocal";
+    import {uploadUrl} from "@/config/env";
     export default {
         data() {
             return {
+                uploadUrl: uploadUrl,
                 tableData: [],
                 currentRow: null,
                 offset: 0,
@@ -165,7 +167,6 @@
                     }
                 ));
 
-                console.log(res.data.data.materialAuditList);
                 if (res.data.code === 200) {
                     this.tableData = res.data.data.materialAuditList;
                     this.count = res.data.data.count;

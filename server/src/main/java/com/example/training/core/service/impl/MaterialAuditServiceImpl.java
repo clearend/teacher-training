@@ -8,6 +8,7 @@ import com.example.training.core.entity.SysFile;
 import com.example.training.core.entity.User;
 import com.example.training.core.entity.enums.AuditEnum;
 import com.example.training.core.entity.enums.FileStatusEnum;
+import com.example.training.core.entity.enums.RoleEnum;
 import com.example.training.core.entity.request.MaterialAuditListRequest;
 import com.example.training.core.entity.request.MaterialAuditRequest;
 import com.example.training.core.entity.vo.MaterialAuditListItemVO;
@@ -45,7 +46,7 @@ public class MaterialAuditServiceImpl extends ServiceImpl<MaterialAuditMapper, M
     private MaterialMapper materialMapper;
 
     @Override
-    public MaterialAuditListVO getMaterialAuditList(MaterialAuditListRequest materialAuditListRequest) {
+    public MaterialAuditListVO getMaterialAuditList(MaterialAuditListRequest materialAuditListRequest, User user) {
         Integer currentPage = materialAuditListRequest.getPageRequest().getCurrentPage();
         Integer pageSize = materialAuditListRequest.getPageRequest().getPageSize();
         Integer offset = (currentPage - 1) * pageSize;
@@ -56,6 +57,10 @@ public class MaterialAuditServiceImpl extends ServiceImpl<MaterialAuditMapper, M
         wrapper.leftJoin(Material.class, Material::getMaterialId, MaterialAudit::getMaterialId)
                 .leftJoin(User.class, User::getUserId, Material::getUserId)
                 .leftJoin(SysFile.class, SysFile::getFileId, Material::getFileId);
+
+        if (user.getRole() == RoleEnum.USER) {
+            wrapper.eq(MaterialAudit::getAuditUserId, user.getUserId());
+        }
 
         materialListVO.setCount(materialAuditMapper.selectCount(wrapper));
 

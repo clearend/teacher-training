@@ -2,6 +2,7 @@ package com.example.training.core.service;
 
 import com.example.training.core.entity.MaterialAudit;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.training.core.entity.User;
 import com.example.training.core.entity.request.MaterialAuditListRequest;
 import com.example.training.core.entity.request.MaterialAuditRequest;
 import com.example.training.core.entity.vo.MaterialAuditListVO;
@@ -16,7 +17,7 @@ import com.example.training.core.entity.vo.MaterialAuditListVO;
  */
 public interface IMaterialAuditService extends IService<MaterialAudit> {
 
-    MaterialAuditListVO getMaterialAuditList(MaterialAuditListRequest materialAuditListRequest);
+    MaterialAuditListVO getMaterialAuditList(MaterialAuditListRequest materialAuditListRequest, User user);
 
     void auditMaterial(MaterialAuditRequest materialAuditRequest);
 }
