@@ -10,6 +10,9 @@ let baseUrl = '';
 let routerMode = 'hash';
 let baseImgPath;
 
+// let uploadUrl = "http://localhost:8901/core/sysFile/upload"
+let uploadUrl = "http://114.116.252.42/server/core/sysFile/upload"
+
 if (process.env.NODE_ENV == 'development') {
 	baseUrl = '';
     baseImgPath = '/img/';
@@ -21,5 +24,6 @@ if (process.env.NODE_ENV == 'development') {
 export {
 	baseUrl,
 	routerMode,
-	baseImgPath
+	baseImgPath,
+	uploadUrl
 }
