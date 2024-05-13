@@ -10,6 +10,7 @@ import com.example.training.core.entity.request.UpsertUserRequest;
 import com.example.training.core.entity.vo.UserInfoVO;
 import com.example.training.core.entity.vo.UserListVO;
 import com.example.training.core.service.IUserService;
+import com.example.training.utils.MailUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -33,6 +34,9 @@ import java.util.Objects;
 public class UserController {
     @Resource
     private IUserService userService;
+
+    @Resource
+    private MailUtils mailUtils;
 
     @PostMapping("/login")
     @Operation(summary = "用户登录")
@@ -78,5 +82,17 @@ public class UserController {
     @Operation(summary = "用户删除")
     public ResultResponse<UserInfoVO> deleteUser(@RequestBody SingleIdRequest request) {
         return ResultResponse.success(userService.deleteUser(request.getId()));
+    }
+
+    @PermissionAccess
+    @PostMapping("/mail")
+    @Operation(summary = "发送邮件")
+    public ResultResponse<?> sendMail(
+            @RequestParam(name = "to") String to,
+            @RequestParam(name = "subject") String subject,
+            @RequestParam(name = "content") String content
+    ) {
+        mailUtils.sendTextMailMessage(to, subject, content);
+        return ResultResponse.success();
     }
 }
