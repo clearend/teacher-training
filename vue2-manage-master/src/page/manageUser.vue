@@ -26,8 +26,9 @@
 <!--                        <el-menu-item index="vueEdit">文本编辑</el-menu-item>-->
 <!--                    </el-submenu>-->
                     <el-submenu index="6">
-                        <template slot="title"><i class="el-icon-setting"></i>设置</template>
-                        <el-menu-item index="adminSetUser">个人中心</el-menu-item>
+                        <template slot="title"><i class="el-icon-setting"></i>个人中心</template>
+                        <el-menu-item index="remindUserList">消息提醒</el-menu-item>
+                        <el-menu-item index="adminSetUser">个人信息</el-menu-item>
                         <!-- <el-menu-item index="sendMessage">发送通知</el-menu-item> -->
                     </el-submenu>
 <!--                    <el-submenu index="7">-->

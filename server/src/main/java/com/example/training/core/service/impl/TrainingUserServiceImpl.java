@@ -1,9 +1,12 @@
 package com.example.training.core.service.impl;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.example.training.common.exceptions.BizException;
 import com.example.training.common.exceptions.PermissionDenyException;
+import com.example.training.core.entity.RemindMessage;
 import com.example.training.core.entity.Training;
 import com.example.training.core.entity.TrainingUser;
 import com.example.training.core.entity.User;
@@ -11,13 +14,17 @@ import com.example.training.core.entity.enums.RoleEnum;
 import com.example.training.core.entity.request.AddPersonRequest;
 import com.example.training.core.entity.request.CreateTrainingRequest;
 import com.example.training.core.entity.request.DeleteTrainingUserRequest;
+import com.example.training.core.mapper.RemindMessageMapper;
 import com.example.training.core.mapper.TrainingMapper;
 import com.example.training.core.mapper.TrainingUserMapper;
 import com.example.training.core.service.ITrainingUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,8 +39,34 @@ import java.util.List;
 public class TrainingUserServiceImpl extends ServiceImpl<TrainingUserMapper, TrainingUser> implements ITrainingUserService {
     @Resource
     private TrainingUserMapper trainingUserMapper;
+
+    @Resource
+    private TrainingMapper trainingMapper;
+
+    @Resource
+    private RemindMessageMapper remindMessageMapper;
+
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void addPerson(AddPersonRequest createTrainingRequest, User user1) {
+        Training training = trainingMapper.selectOne(
+                new LambdaQueryWrapper<Training>()
+                        .eq(Training::getTrainingId, createTrainingRequest.getTrainingId())
+        );
+        if (training == null) {
+            throw new BizException("待报名培训不存在");
+        }
+
+        String startTime = DateUtil.format(training.getTrainingTime(), "yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String s = sdf.format(training.getTrainingTime());
+        Date remindTime = null;
+        try {
+            remindTime = sdf.parse(s);
+        } catch (Exception e) {
+            throw new RuntimeException("时间格式转换错误");
+        }
+
         List<String> userList = createTrainingRequest.getUserList();
         if (userList != null && !userList.isEmpty()){
             for (String userId: userList) {
@@ -41,6 +74,13 @@ public class TrainingUserServiceImpl extends ServiceImpl<TrainingUserMapper, Tra
                 Integer flag = trainingUserMapper.getTrainingUserById(createTrainingRequest.getTrainingId(), userId);
                 if (flag == null) {
                     trainingUserMapper.addPerson(createTrainingRequest.getTrainingId(), userId, user1.getUserId());
+
+                    RemindMessage remindMessage = new RemindMessage();
+                    remindMessage.setRemindId("rm-" + IdUtil.fastSimpleUUID());
+                    remindMessage.setRemindContent("您已报名参与" + training.getTrainingName() + "，开始时间为：" + startTime + "，请准时参加");
+                    remindMessage.setRemindTime(remindTime);
+                    remindMessage.setRemindUserId(userId);
+                    remindMessageMapper.insert(remindMessage);
                     continue;
                 }
                 if (flag == 0) {

@@ -9,6 +9,7 @@
                         <el-menu-item index="userList">用户列表</el-menu-item>
                         <el-menu-item index="shopList">培训内容列表</el-menu-item>
                         <el-menu-item index="foodList">素材列表</el-menu-item>
+                        <el-menu-item index="remindList">提醒列表</el-menu-item>
 
 
                     </el-submenu>
@@ -30,8 +31,8 @@
 <!--                        <el-menu-item index="vueEdit">文本编辑</el-menu-item>-->
 <!--                    </el-submenu>-->
                     <el-submenu index="6">
-                        <template slot="title"><i class="el-icon-setting"></i>设置</template>
-                        <el-menu-item index="adminSet">个人中心</el-menu-item>
+                        <template slot="title"><i class="el-icon-setting"></i>个人中心</template>
+                        <el-menu-item index="adminSet">个人信息</el-menu-item>
                         <!-- <el-menu-item index="sendMessage">发送通知</el-menu-item> -->
                     </el-submenu>
 <!--                    <el-submenu index="7">-->

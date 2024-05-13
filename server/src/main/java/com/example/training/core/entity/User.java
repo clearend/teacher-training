@@ -53,6 +53,9 @@ public class User implements Serializable {
     @Schema(description = "手机号")
     private String phone;
 
+    @Schema(description = "提醒方式")
+    private Integer remindType;
+
     @Schema(description = "是否删除")
     @TableLogic
     private Integer isDel;

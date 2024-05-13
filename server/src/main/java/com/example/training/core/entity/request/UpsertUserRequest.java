@@ -27,4 +27,7 @@ public class UpsertUserRequest {
 
     @Schema(description = "手机号")
     private String phone;
+
+    @Schema(description = "提醒方式")
+    private Integer remindType;
 }

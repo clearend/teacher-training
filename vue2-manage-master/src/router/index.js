@@ -25,6 +25,8 @@ const adminSet = r => require.ensure([], () => r(require('@/page/adminSet')), 'a
 const adminSetUser = r => require.ensure([], () => r(require('@/page/adminSetUser')), 'adminSetUser');
 const sendMessage = r => require.ensure([], () => r(require('@/page/sendMessage')), 'sendMessage');
 const explain = r => require.ensure([], () => r(require('@/page/explain')), 'explain');
+const remindList = r => require.ensure([], () => r(require('@/page/remindList')), 'remindList');
+const remindUserList = r => require.ensure([], () => r(require('@/page/remindUserList')), 'remindUserList');
 
 const routes = [
     {
@@ -60,6 +62,10 @@ const routes = [
             component: foodList,
             meta: ['数据管理', '素材列表'],
         },{
+            path: '/remindList',
+            component: remindList,
+            meta: ['数据管理', '提醒列表'],
+        }, {
             path: '/orderList',
             component: orderList,
             meta: ['审批管理', '素材审批列表'],
@@ -86,7 +92,7 @@ const routes = [
         },{
             path: '/adminSet',
             component: adminSet,
-            meta: ['设置', '管理员设置'],
+            meta: ['个人中心', '个人信息'],
         },{
             path: '/sendMessage',
             component: sendMessage,
@@ -120,7 +126,11 @@ const routes = [
         },{
             path: '/adminSetUser',
             component: adminSetUser,
-            meta: ['设置', '管理员设置'],
+            meta: ['个人中心', '个人信息'],
+        }, {
+            path: '/remindUserList',
+            component: remindUserList,
+            meta: ['个人中心', '消息提醒'],
         }]
     }
 ]

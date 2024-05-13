@@ -3,32 +3,63 @@
         <head-top></head-top>
         <header class="admin_title">管理员信息</header>
         <div class="admin_set">
-            <ul>
-                <li>
-                    <span>姓名：</span><span>{{adminInfo.user_name}}</span>
-                </li>
-                <li>
-                    <span>注册时间：</span><span>{{adminInfo.create_time}}</span>
-                </li>
-                <li>
-                    <span>管理员权限：</span><span>{{adminInfo.admin}}</span>
-                </li>
-                <li>
-                    <span>管理员 ID：</span><span>{{adminInfo.id}}</span>
-                </li>
-                <li>
-                    <span>更换头像：</span>
-                    <el-upload
-                      class="avatar-uploader"
-                      :action="baseUrl + '/admin/update/avatar/' + adminInfo.id"
-                      :show-file-list="false"
-                      :on-success="uploadImg"
-                      :before-upload="beforeImgUpload">
-                      <img v-if="adminInfo.avatar" :src="baseImgPath + adminInfo.avatar" class="avatar">
-                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                    </el-upload>
-                </li>    
-            </ul>
+            <el-row>
+                <el-col :span="18"></el-col>
+                <el-col :span="6">
+                    <el-button type="primary" @click="editing = !editing">{{editing ? '保存' : '编辑'}}</el-button>
+                </el-col>
+            </el-row>
+
+            <el-form :model="userInfo" ref="userInfoForm" :rules="rules">
+                <el-form-item label="用户姓名" label-width="100px" prop="userName">
+                    <el-input v-model="userInfo.userName" auto-complete="off" :disabled="editing"></el-input>
+                </el-form-item>
+                <el-form-item label="工号" label-width="100px" prop="jobId" :disabled="true">
+                    <el-input v-model.number="userInfo.jobId"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" label-width="100px" prop="password" :disabled="editing">
+                    <el-input v-model="userInfo.password" type="password"></el-input>
+                </el-form-item>
+                <el-form-item label="性别" label-width="100px" prop="gender" :disabled="editing">
+                    <el-select v-model="userInfo.gender" placeholder="请选择性别">
+                        <el-option label="未知" value="0"></el-option>
+                        <el-option label="男" value="1"></el-option>
+                        <el-option label="女" value="2"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="电话" label-width="100px" prop="phone" :disabled="editing">
+                    <el-input v-model="userInfo.phone"></el-input>
+                </el-form-item>
+                <el-form-item label="电子邮箱" label-width="100px" prop="email" :disabled="editing">
+                    <el-input v-model="userInfo.email"></el-input>
+                </el-form-item>
+            </el-form>
+<!--            <ul>-->
+<!--                <li>-->
+<!--                    <span>姓名：</span><span>{{adminInfo.user_name}}</span>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                    <span>注册时间：</span><span>{{adminInfo.create_time}}</span>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                    <span>管理员权限：</span><span>{{adminInfo.admin}}</span>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                    <span>管理员 ID：</span><span>{{adminInfo.id}}</span>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                    <span>更换头像：</span>-->
+<!--                    <el-upload-->
+<!--                      class="avatar-uploader"-->
+<!--                      :action="baseUrl + '/admin/update/avatar/' + adminInfo.id"-->
+<!--                      :show-file-list="false"-->
+<!--                      :on-success="uploadImg"-->
+<!--                      :before-upload="beforeImgUpload">-->
+<!--                      <img v-if="adminInfo.avatar" :src="baseImgPath + adminInfo.avatar" class="avatar">-->
+<!--                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>-->
+<!--                    </el-upload>-->
+<!--                </li>    -->
+<!--            </ul>-->
         </div>
     </div>
 </template>
