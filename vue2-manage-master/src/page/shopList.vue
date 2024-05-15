@@ -460,7 +460,7 @@
                 this.specsFormVisible = true;
             },
             handleExport() {
-                window.open("http://localhost:8901/core/trainingUser/export");
+                window.open("http://114.116.252.42/server/core/trainingUser/export");
             },
         }
     }
